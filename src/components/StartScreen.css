@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins:wght@600;800&display=swap");
+
+.startScMainContainer {
+  background-image: url("../assets/images/Timer-Screen.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.startScDslLogo {
+  display: flex;
+}
+
+.startScDslLogo img {
+  width: 12%;
+  margin-left: 2rem;
+  margin-top: 2rem;
+}
+
+.startScSubContainer {
+  display: flex;
+  flex-direction: row;
+  /* margin-top: 6rem; */
+}
+
+.startScBoxAndBtn {
+  display: flex;
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transform: translateX(150px);
+  position: relative;
+}
+
+.startScTextBox {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 7rem;
+  background-image: linear-gradient(
+    to top,
+    rgb(255, 132, 0),
+    rgba(255, 0, 0, 0)
+  );
+  padding-left: 2rem;
+  padding-right: 2rem;
+  position: absolute;
+  top: 120px;
+}
+
+.simpleText {
+  font-family: "Poppins";
+  font-weight: 600;
+  font-size: 2rem;
+  margin-bottom: 0rem;
+  /* margin-top: 0; */
+  text-shadow: 6px 6px 4px black;
+}
+
+.boldText {
+  font-family: "Poppins";
+  font-weight: 1000;
+  font-size: 6rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-shadow: 6px 9px 4px black;
+}
+
+.startScBtn {
+  /* display: flex;
+    align-items: center;
+    justify-content: center; */
+  position: absolute;
+  top: 420px;
+}
+
+.startScBtn button {
+  border-radius: 15px 15px 15px 15px;
+  font-family: "Poppins";
+  color: #fff;
+  font-size: 1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  background-image: linear-gradient(
+    rgb(248, 71, 22),
+    rgb(233, 129, 59),
+    rgba(227, 155, 76, 1),
+    rgba(255, 171, 81, 1)
+  );
+  text-shadow: 3px 4px 4px black;
+}
+
+.startScCharacter {
+  display: flex;
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.startScCharacter img {
+  transform: translateX(-150px);
+  position: absolute;
+  top: -120px;
+  width: 800px;
+}

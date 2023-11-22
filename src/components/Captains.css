@@ -1,0 +1,138 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins:wght@600;800&display=swap");
+
+.captainScMainContainer {
+  background-image: url("../assets/images/Timer-Screen.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.captainScDslLogo {
+  display: flex;
+}
+
+.captainScDslLogo img {
+  width: 12%;
+  margin-left: 2rem;
+  margin-top: 2rem;
+}
+
+.captainScSubContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.captainScTextAndBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translate(100px, 120px);
+  /* transform: translateX(50px); */
+}
+
+.captainScText {
+  font-family: "Poppins";
+  color: white;
+  font-weight: 1000;
+  font-size: 4.5rem;
+  text-shadow: 6px 6px 4px black;
+}
+
+.captainScBtn button {
+  border-radius: 15px 15px 15px 15px;
+  font-family: "Poppins";
+  color: #fff;
+  font-size: 2rem;
+  /* padding-left: 1.5rem;
+  padding-right: 1.5rem; */
+  padding: 0.4rem 1.6rem;
+  background-image: linear-gradient(
+    rgb(248, 71, 22),
+    rgb(233, 129, 59),
+    rgba(227, 155, 76, 1),
+    rgba(255, 171, 81, 1)
+  );
+  text-shadow: 3px 4px 4px black;
+  transform: translateY(-60px);
+}
+
+.captainScCharacter {
+  display: flex;
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.captainScCharacter img {
+  transform: translateX(-150px);
+  position: absolute;
+  top: -120px;
+  width: 800px;
+  transform: translateX(-100px);
+}
+
+.captainsScCompanyLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  padding: 0px 20px;
+  background: linear-gradient(rgba(186, 9, 9, 0), rgba(255, 255, 255, 0.236));
+}
+
+.captainsScPosition {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.captainsScPosition h1 {
+  position: absolute;
+  font-size: 15em;
+  color: #ffffff50;
+  transform: translateY(-15px);
+}
+
+.captainsScPosition img {
+  width: 250px;
+  z-index: 1;
+  filter: drop-shadow(5px 5px 2px black);
+}
+
+.captainScCurrentUser {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  /* flex-direction: column; */
+   margin-left: 2rem;
+  /* margin-top: 2rem; */
+}
+
+.captainScCurrentUser h1 {
+  position: absolute;
+  font-size: 15em;
+  color: #ffffff50;
+  transform: translate(60px,-15px);
+
+}
+
+.captainScCurrentUser img {
+  width: 250px;
+  z-index: 1;
+  filter: drop-shadow(5px 5px 2px black);
+}

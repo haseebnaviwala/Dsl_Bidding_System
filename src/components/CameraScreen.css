@@ -1,0 +1,35 @@
+.cameraScMainContainer {
+  background-image: url("../assets/images/Timer-Screen.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.cameraScDslLogo {
+  display: flex;
+}
+
+.cameraScDslLogo img {
+  width: 12%;
+  margin-left: 2rem;
+  margin-top: 2rem;
+}
+
+.cameraScSubContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.cameraCircle {
+  border: 1rem solid rgb(255, 126, 54);
+  /* padding: 21rem; */
+  transform: translateY(-20px);
+  border-radius: 100%;
+  /* width: 100%; */
+  background-size: cover;
+  overflow: hidden;
+}
