@@ -1,3 +1,8 @@
+import "./App.css";
+import CameraScreen from "./components/CameraScreen";
+import Captains from "./components/Captains";
+import StartScreen from "./components/StartScreen";
+import TimerScreen from "./components/TimerScreen";
 import './App.css';
 // import Welldone from './components/welldone';
 import Login from './components/login';
@@ -7,6 +12,10 @@ import Login from './components/login';
 function App() {
   return (
     <div className="App">
+      {/* <TimerScreen /> */}
+      {/* <StartScreen /> */}
+      <CameraScreen />
+      {/* <Captains /> */}
       {/* <Welldone></Welldone> */}
       <Login></Login>
     </div>

@@ -1,0 +1,62 @@
+.timerMainContainer {
+  background-image: url("../assets/images/Timer-Screen.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.timerDslLogo {
+  display: flex;
+}
+
+.timerDslLogo img {
+  width: 12%;
+  margin-left: 2rem;
+  margin-top: 2rem;
+}
+
+.timerCharacterWatch {
+  display: flex;
+  flex-direction: row;
+}
+
+.timerCharacter {
+  display: flex;
+  width: 50%;
+}
+
+.timerWatchMain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timerWatch {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  border: 0.8rem solid white;
+  border-radius: 50%;
+}
+
+.timerClock {
+  align-items: center;
+  color: skyblue;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background-color: white;
+  border: 0.8rem solid white;
+  padding: 5rem;
+  border-radius: 50%;
+  margin: 1rem;
+}
+
+/* .timerVerticleLine {
+  width: 2rem;
+  background-color: #fff;
+  background-image: none;
+  height: 3rem;
+  display: flex;
+} */
