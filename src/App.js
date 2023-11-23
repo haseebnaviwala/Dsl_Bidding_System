@@ -14,7 +14,7 @@ function App() {
     <div className="App">
       {/* <TimerScreen /> */}
       {/* <StartScreen /> */}
-      <CameraScreen />
+      {/* <CameraScreen /> */}
       {/* <Captains /> */}
       {/* <Welldone></Welldone> */}
       <Login></Login>

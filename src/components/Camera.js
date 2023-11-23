@@ -4,7 +4,7 @@ import Webcam from "react-webcam";
 export default function Camera() {
   return (
     <div>
-      <Webcam />
+      <Webcam audio={false} width={120 + "%"} mirrored={true} />
     </div>
   );
 }
