@@ -57,6 +57,7 @@
   );
   text-shadow: 3px 4px 4px black;
   transform: translateY(-60px);
+  cursor: pointer;
 }
 
 .captainScCharacter {
@@ -68,11 +69,11 @@
 }
 
 .captainScCharacter img {
-  transform: translateX(-150px);
+  /* transform: translateX(-150px); */
   position: absolute;
   top: -120px;
   width: 800px;
-  transform: translateX(-100px);
+  transform: translateX(-50px);
 }
 
 .captainsScCompanyLogo {
@@ -135,4 +136,73 @@
   width: 250px;
   z-index: 1;
   filter: drop-shadow(5px 5px 2px black);
+}
+
+.bidding-modal{
+  background: rgba(255, 255, 255, 0.70);
+  width: fit-content;
+  padding: 50px 70px;
+  font-family: "Poppins";
+  font-weight: 600;
+  position: absolute;
+  z-index: 1000;
+  left: 50px;
+  top: 22vh;
+  border-radius: 15px;
+  opacity: 1;
+  transform: translateX(-1000px);
+}
+
+.bid-input{
+  display: flex;
+  column-gap: 10px;
+}
+
+.bid-input input{
+  padding: 10px 20px;
+  font-size: 25px;
+  background: black;
+  border: none;
+  color: white;
+  font-family: "Poppins";
+  font-weight: 600;
+  border-radius: 5px;
+}
+
+.bid-direct{
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  /* justify-content: center; */
+  align-items: center;
+}
+
+.bid-direct div{
+  column-gap: 50px;
+  display: flex;
+  padding-bottom: 20px;
+}
+
+.bidding-modal button{
+  font-size: 20px;
+  font-family: "Poppins";
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+  padding: 10px;
+  width: 200px;
+  cursor: pointer;
+}
+
+.ownerTimer{
+  position: absolute;
+  width: fit-content;
+  color: white;
+  top: 15px;
+  left: 18%;
+  font-size: 50px;
+  font-family: "Poppins";
+  font-weight: 600;
 }
