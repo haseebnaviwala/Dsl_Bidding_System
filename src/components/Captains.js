@@ -143,10 +143,13 @@ export default function Captains() {
     const timerCollection = collection(db, "timer");
     const queryRef = query(timerCollection);
     onSnapshot(queryRef, (snapshot) => {
-      const docValues = snapshot.docs[0];
-      const timerData = docValues.data();
+      const timerData = snapshot.docs
+        .find(({ id }) => {
+          return id === "timer_2";
+        })
+        ?.data();
+
       toggleTimer(timerData.start_stop);
-      console.log({ docValues, timerData });
       resetClock(timerData.reset);
     });
   }
@@ -169,14 +172,19 @@ export default function Captains() {
     // console.log(captainsData);
   }, []);
 
-  useEffect(() => {
-    if (timer === 0) {
-      if (index <= captainData.length) {
-        setIndex(index + 1);
-        // resetClock(true);
-        handleOwnerTimer(TIMER_STATES.RESET);
-      }
+  const getNextCaptain = async () => {
+    if (index <= captainData.length) {
+      setIndex(index + 1);
+      await handleOwnerTimer(TIMER_STATES.RESET);
     }
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (timer === 0) {
+        await getNextCaptain();
+      }
+    })();
   }, [timer]);
 
   return (
