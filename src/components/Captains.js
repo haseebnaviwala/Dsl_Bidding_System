@@ -19,6 +19,7 @@ export default function Captains() {
   const [amount, setAmount] = useState(300000);
   const [captainData, setCaptainData] = useState([]);
   const [index, setIndex] = useState(0);
+  const [ownerLogo, setOwnerLogo] = useState("");
 
   // console.log(localStorage.getItem("userName"));
 
@@ -67,7 +68,7 @@ export default function Captains() {
     const queryRef = query(captainsCollection);
     onSnapshot(queryRef, (snapshot) => {
       snapshot.docs.forEach((document) => {
-        console.log(document.data().username);
+        // console.log(document.data().username);
         captainsData.push(document.data());
       });
       setCaptainData(captainsData);
@@ -75,15 +76,19 @@ export default function Captains() {
     // console.log(captainsData);
   }
 
-  async function getCurrentOwnerLogo() {
-    // const docRef = doc(db, "Owners","Chase");
-    // const docSnap = await getDoc(docRef);
-    // if (docSnap.exists()) {
-    //   console.log("Document data:", docSnap.data());
-    // } else {
-    // docSnap.data() will be undefined in this case
-    //   console.log("No such document!");
-    // }
+  function getCurrentOwnerLogo() {
+    getDoc(doc(db, "Owners", localStorage.getItem("userName")))
+        .then((docu) => {
+          if (docu.exists()) {
+            // console.log(docu.data().url);
+            setOwnerLogo(docu.data().url);
+          } else {
+            // alert("Owner Not Available");
+          }
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
+        });
   }
 
   const [timer, setTimer] = useState(CAPTAINS_TIMER_IN_SECS);
@@ -163,9 +168,10 @@ export default function Captains() {
   };
 
   useEffect(() => {
-    // getLogo();
+    getLogo();
     getCaptains();
     getTimerData();
+    getCurrentOwnerLogo();
     return () => {
       stopTimer();
     };
@@ -200,7 +206,7 @@ export default function Captains() {
               console.log(items);
               return <p>{items.username}</p>;
             })} */}
-            {captainData[index]?.username}
+            {captainData[12]?.username}
           </div>
 
           <div className="captainScBtn">
@@ -215,7 +221,7 @@ export default function Captains() {
 
             // console.log(items)
           })} */}
-          <img src={captainData[index]?.url} />
+          <img src={captainData[12]?.url} />
         </div>
       </div>
 
@@ -238,7 +244,7 @@ export default function Captains() {
 
       <div className="captainScCurrentUser">
         <h1>8</h1>
-        <img src={CompanyLogo} alt="company logo" />
+        <img src={ownerLogo} alt="company logo" />
       </div>
 
       <div className="ownerTimer">
