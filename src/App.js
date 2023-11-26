@@ -1,17 +1,18 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import TimerScreen from "./components/TimerScreen";
-import Login from './components/login';
-import Admin from './components/admin';
-import Positions from './components/positions';
+import Login from "./components/login";
+import Admin from "./components/admin";
+import Positions from "./components/positions";
 import Welldone from "./components/welldone";
-import CameraScreen from "./components/CameraScreen"
+import CameraScreen from "./components/CameraScreen";
+import Captains from "./components/Captains";
+import AdminControls from "./components/AdminControls";
 
 function App() {
   return (
     <div className="App">
       <Routes>
-
         <Route
           exact
           path="/"
@@ -67,7 +68,28 @@ function App() {
           }
         ></Route>
 
+        <Route
+          path="/adminControls"
+          element={
+            <div>
+              <AdminControls></AdminControls>
+            </div>
+          }
+        ></Route>
+
+        <Route
+          path="/captains"
+          element={
+            <div>
+              <Captains></Captains>
+            </div>
+          }
+        ></Route>
+
       </Routes>
+
+      {/* <AdminControls /> */}
+      {/* <Captains /> */}
     </div>
   );
 }
