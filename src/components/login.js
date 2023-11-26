@@ -12,6 +12,10 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+const getOwnerData=()=>{
+  
+}
+
   function login() {
     if (username === "" && password === "") {
       alert("Enter credentials to continue!!");
