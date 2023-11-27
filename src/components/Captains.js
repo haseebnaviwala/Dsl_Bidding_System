@@ -1,16 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Captains.css";
 import DslLogo from "../assets/images/logo.png";
-import StartScCharacter from "../assets/images/start-screen-character.png";
 import CompanyLogo from "../assets/images/chamdia group.png";
 import { gsap } from "gsap";
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
+  getDocs,
+  limit,
   onSnapshot,
+  orderBy,
   query,
+  setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { CAPTAINS_TIMER_IN_SECS, TIMER_STATES } from "./Contants";
@@ -20,75 +25,52 @@ export default function Captains() {
   const [captainData, setCaptainData] = useState([]);
   const [index, setIndex] = useState(0);
   const [ownerLogo, setOwnerLogo] = useState("");
-
-  // console.log(localStorage.getItem("userName"));
+  const [topThreeBidders, setTopThreeBidders] = useState([]);
 
   function addAmount(bid) {
-    setAmount(amount + bid);
+    const sum = amount + bid;
+    setAmount(sum);
+    handleOwnerTimer(TIMER_STATES.RESET);
+    handleOwnerTimer(TIMER_STATES.START);
+    addOrUpdateBid(sum);
   }
 
   function openBidding() {
+    const initBid = amount;
     const t2 = gsap.timeline();
 
     t2.to(".bidding-modal", {
       transform: "translateX(0px)",
       duration: 0.5,
     });
-  }
-
-  function getLogo() {
-    // const docRef = doc(db, "Owners","Chase");
-    // const docSnap = await getDoc(docRef);
-    // if (docSnap.exists()) {
-    //   console.log("Document data:", docSnap.data());
-    // } else {
-    //   // docSnap.data() will be undefined in this case
-    //   console.log("No such document!");
-    // }
-    const ownersCollection = collection(db, "Owners");
-    const queryRef = query(ownersCollection);
-    onSnapshot(queryRef, (snapshot) => {
-      snapshot.docs.forEach((document) => {
-        console.log(document.data());
-      });
-    });
+    addOrUpdateBid(initBid);
   }
 
   function getCaptains() {
-    // const docRef = doc(db, "Owners","Chase");
-    // const docSnap = await getDoc(docRef);
-    // if (docSnap.exists()) {
-    //   console.log("Document data:", docSnap.data());
-    // } else {
-    // docSnap.data() will be undefined in this case
-    //   console.log("No such document!");
-    // }
     const captainsCollection = collection(db, "captains");
     const captainsData = [];
     const queryRef = query(captainsCollection);
     onSnapshot(queryRef, (snapshot) => {
       snapshot.docs.forEach((document) => {
-        // console.log(document.data().username);
         captainsData.push(document.data());
       });
       setCaptainData(captainsData);
     });
-    // console.log(captainsData);
   }
 
   function getCurrentOwnerLogo() {
     getDoc(doc(db, "Owners", localStorage.getItem("userName")))
-        .then((docu) => {
-          if (docu.exists()) {
-            // console.log(docu.data().url);
-            setOwnerLogo(docu.data().url);
-          } else {
-            // alert("Owner Not Available");
-          }
-        })
-        .catch((error) => {
-          console.log("Error getting document:", error);
-        });
+      .then((docu) => {
+        if (docu.exists()) {
+          // console.log(docu.data().url);
+          setOwnerLogo(docu.data().url);
+        } else {
+          // alert("Owner Not Available");
+        }
+      })
+      .catch((error) => {
+        console.log("Error getting document:", error);
+      });
   }
 
   const [timer, setTimer] = useState(CAPTAINS_TIMER_IN_SECS);
@@ -160,28 +142,82 @@ export default function Captains() {
   }
 
   const handleOwnerTimer = async (payload) => {
-    console.log("handle update");
     const timerRef = doc(db, "timer", "timer_2");
 
-    // Set the "capital" field of the city 'DC'
     await updateDoc(timerRef, payload);
   };
 
+  const getCaptainBidForUser = async () => {
+    const captainName = captainData[index].username;
+    const userName = localStorage.getItem("userName");
+    // console.log({ captainName, userName });
+    const q = query(
+      collection(db, "bidAmount"),
+      where("ownerName", "==", localStorage.getItem("userName")),
+      where("captainName", "==", captainData[index].username)
+    );
+
+    const querySnapshot = await getDocs(q);
+    console.log(querySnapshot);
+    if (querySnapshot.docs?.length) {
+      const docId = querySnapshot.docs[0].id;
+      return {
+        id: docId,
+        ...querySnapshot.docs[0].data(),
+      };
+    }
+    return null;
+  };
+
+  const getTopThreeBidders = async () => {
+    console.log(captainData[index].username)
+    const q = query(
+      collection(db, "bidAmount"),
+      where("captainName", "==", captainData[index].username),
+      orderBy("bidAmount", "desc"),
+      limit(3)
+    );
+
+    onSnapshot(q, (query) => {
+      const topThreeBidders = query.docs.map((document) => {
+        return document.data();
+      });
+      setTopThreeBidders(topThreeBidders);
+    });
+  };
+
+  const addOrUpdateBid = async (amount) => {
+    console.log(amount);
+    const existingBid = await getCaptainBidForUser();
+    if (existingBid) {
+      await updateDoc(doc(db, "bidAmount", existingBid.id), {
+        bidAmount: amount,
+      });
+    } else {
+      await addDoc(collection(db, "bidAmount"), {
+        captainName: captainData[index].username,
+        bidAmount: amount,
+        ownerName: localStorage.getItem("userName"),
+        ownerLogo: ownerLogo,
+      });
+    }
+  };
+
   useEffect(() => {
-    getLogo();
     getCaptains();
     getTimerData();
+
     getCurrentOwnerLogo();
     return () => {
       stopTimer();
     };
-    // console.log(captainsData);
   }, []);
 
   const getNextCaptain = async () => {
     if (index <= captainData.length) {
       setIndex(index + 1);
       await handleOwnerTimer(TIMER_STATES.RESET);
+      setAmount(300000);
     }
   };
 
@@ -193,6 +229,13 @@ export default function Captains() {
     })();
   }, [timer]);
 
+  useEffect(() => {
+    console.log(captainData)
+    if (captainData.length) {
+      getTopThreeBidders();
+    }
+  }, [captainData]);
+
   return (
     <div className="captainScMainContainer">
       <div className="captainScDslLogo">
@@ -201,13 +244,7 @@ export default function Captains() {
 
       <div className="captainScSubContainer">
         <div className="captainScTextAndBtn">
-          <div className="captainScText">
-            {/* {captainData.map((items) => {
-              console.log(items);
-              return <p>{items.username}</p>;
-            })} */}
-            {captainData[12]?.username}
-          </div>
+          <div className="captainScText">{captainData[index]?.username}</div>
 
           <div className="captainScBtn">
             <button onClick={openBidding}>MINIMUM BID</button>
@@ -215,31 +252,19 @@ export default function Captains() {
         </div>
 
         <div className="captainScCharacter">
-          {/* {captainData.map((items) => {
-            console.log(items);
-            return <img src={items.url} alt="captain image" />;
-
-            // console.log(items)
-          })} */}
-          <img src={captainData[12]?.url} />
+          <img src={captainData[index]?.url} />
         </div>
       </div>
 
       <div className="captainsScCompanyLogo">
-        <div className="captainsScPosition">
-          <h1>1</h1>
-          <img src={CompanyLogo} alt="company logo" />
-        </div>
-
-        <div className="captainsScPosition">
-          <h1>2</h1>
-          <img src={CompanyLogo} alt="company logo" />
-        </div>
-
-        <div className="captainsScPosition">
-          <h1>3</h1>
-          <img src={CompanyLogo} alt="company logo" />
-        </div>
+        {topThreeBidders.map((item, index) => {
+          return (
+            <div className="captainsScPosition">
+              <h1>{index + 1}</h1>
+              <img src={item.ownerLogo} alt="company logo" />
+            </div>
+          );
+        })}
       </div>
 
       <div className="captainScCurrentUser">
