@@ -26,7 +26,10 @@ export default function Captains() {
   const [ownerLogo, setOwnerLogo] = useState("");
   const [topThreeBidders, setTopThreeBidders] = useState([]);
   const [allBidders, setAllBidders] = useState([]);
+  // const [captainBooked, setCaptainBooked] = useState([]);
   const [increase, setIncrease] = useState(false);
+  const [remainingCaptains, setRemainingCaptains] = useState([]);
+  const [remainingCaptainsIndex, setRemainingCaptainsIndex] = useState(0);
 
   function addAmount(bid) {
     const sum = amount + bid;
@@ -147,7 +150,7 @@ export default function Captains() {
       console.log(doc.data());
       return setIncrease(doc.data().increase);
     });
-  }
+  };
 
   // const getMainTimer = async () => {
   //   onSnapshot(doc(db, "timer", "timer"), (doc) => {
@@ -225,6 +228,22 @@ export default function Captains() {
     });
   };
 
+  // const getCaptainBooked = async () => {
+  //   const q = query(
+  //     collection(db, "bidAmount"),
+  //     where("captainName", "==", captainData[index].username),
+  //     orderBy("bidAmount", "desc")
+  //   );
+
+  //   onSnapshot(q, (query) => {
+  //     const all14Bidders = query.docs.map((document) => {
+  //       // console.log(document.data())
+  //       return document.data();
+  //     });
+  //     setCaptainBooked(all14Bidders);
+  //   });
+  // };
+
   const addOrUpdateBid = async (amount) => {
     // console.log(amount);
     const existingBid = await getCaptainBidForUser();
@@ -271,14 +290,36 @@ export default function Captains() {
         duration: 0.5,
       });
     }
+    else{
+      if(remainingCaptains.length){
+        setRemainingCaptainsIndex(remainingCaptainsIndex + 1)
+      }
+    }
 
     handleOwnerTimer(TIMER_STATES.RESET);
   };
+
+  const isCaptainBooked = async () => {
+    var captains = [];
+    for(let i=0; i < captainData.length; i++){
+      if(captainData[i].username != allBidders[i].captainName){
+        captains.push(captainData[i].username)
+      }
+    }
+    setRemainingCaptains(captains);
+  }
+
+  // const checkCaptain = async () => {
+  //   if (captainBooked.length === 0) {
+  //     setRemainingCaptain(index);
+  //   }
+  // };
 
   useEffect(() => {
     getCaptains();
     getTimerData();
     getIncreaseCaptain();
+    // getCaptainBooked();
 
     // (async () => {
     //   if (getMainTimer() === true) {
