@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
 .timerMainContainer {
   background-image: url("../assets/images/Timer-Screen.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   box-sizing: border-box;
-  min-height: 100vh;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -27,15 +29,23 @@
   width: 50%;
 }
 
+.timerCharacter img{
+  width: 800px;
+  transform: translate(100px, -100px);
+}
+
 .timerWatchMain {
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translateY(-100px);
+  z-index: 1000;
 }
 
 .timerWatch {
   display: flex;
   width: 100%;
+  /* height: 50%; */
   align-items: center;
   border: 0.8rem solid white;
   border-radius: 50%;
@@ -43,20 +53,29 @@
 
 .timerClock {
   align-items: center;
-  color: skyblue;
-  font-size: 2.5rem;
+  color: black;
+  font-size: 4rem;
   font-weight: 700;
   background-color: white;
   border: 0.8rem solid white;
-  padding: 5rem;
+  padding: 2rem;
   border-radius: 50%;
   margin: 1rem;
+  font-family: "Poppins";
+  height: 150px;
+  width: 150px;
+  display: flex;
+  justify-content: center;
 }
 
-/* .timerVerticleLine {
-  width: 2rem;
-  background-color: #fff;
+.timerVerticleLine {
+  position: absolute;
+  top: 0;
+  width: 3rem;
+  background-color: white;
   background-image: none;
-  height: 3rem;
+  height: 100vh;
   display: flex;
-} */
+  left: 57.6%;
+  z-index: 0;
+}

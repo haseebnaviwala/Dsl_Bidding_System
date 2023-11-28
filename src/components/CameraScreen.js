@@ -3,6 +3,8 @@ import "./CameraScreen.css";
 import DslLogo from "../assets/images/logo.png";
 // import CameraImage from "../assets/images/camera-image.png";
 import Camera from "./Camera";
+import { FaCamera } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 export default function CameraScreen() {
 
@@ -18,6 +20,10 @@ export default function CameraScreen() {
             {/* <img src={CameraImage} /> */}
             <Camera />
           </div>
+        </div>
+
+        <div className="cameraButton">
+          <NavLink to="/welldone" style={{color: "black"}}><FaCamera style={{width: "30px", height: "30px"}}></FaCamera></NavLink>
         </div>
       </div>
     </div>
