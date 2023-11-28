@@ -26,7 +26,7 @@ export default function Captains() {
   const [ownerLogo, setOwnerLogo] = useState("");
   const [topThreeBidders, setTopThreeBidders] = useState([]);
   const [allBidders, setAllBidders] = useState([]);
-  const [ownerPosition, setOwnerPosition] = useState("");
+  const [timerEnd, setTimerEnd] = useState(false);
 
   function addAmount(bid) {
     const sum = amount + bid;
@@ -142,6 +142,21 @@ export default function Captains() {
     });
   }
 
+  // const getMainTimer = async () => {
+  //   onSnapshot(doc(db, "timer", "timer"), (doc) => {
+  //     console.log(doc.data());
+  //     // getNextCaptain();
+  //     return setTimerEnd(doc.data().timer_end);
+  //   });
+  // };
+
+  // const getTimerEnd = async () => {
+  //   onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
+  //     console.log(doc.data());
+  //     return setTimerEnd(doc.data().timer_end);
+  //   });
+  // };
+
   const handleOwnerTimer = async (payload) => {
     const timerRef = doc(db, "timer", "timer_2");
 
@@ -203,12 +218,6 @@ export default function Captains() {
     });
   };
 
-  const getOwnerPosition = () => {
-    
-
-
-  }
-
   const addOrUpdateBid = async (amount) => {
     // console.log(amount);
     const existingBid = await getCaptainBidForUser();
@@ -226,16 +235,6 @@ export default function Captains() {
     }
   };
 
-  useEffect(() => {
-    getCaptains();
-    getTimerData();
-
-    getCurrentOwnerLogo();
-    return () => {
-      stopTimer();
-    };
-  }, []);
-
   const getNextCaptain = async () => {
     if (index <= captainData.length) {
       setIndex(index + 1);
@@ -243,11 +242,15 @@ export default function Captains() {
       setAmount(300000);
 
       const end_timer = doc(db, "timer", "timer_2");
+      const changetimervalue2 = doc(db, "timer", "timer");
 
       await updateDoc(end_timer, {
-        timer_end: true
+        timer_end: true,
       });
 
+      await updateDoc(changetimervalue2, {
+        timer_end: false,
+      });
 
       const t3 = gsap.timeline();
 
@@ -257,6 +260,23 @@ export default function Captains() {
       });
     }
   };
+
+  useEffect(() => {
+    getCaptains();
+    getTimerData();
+
+    // (async () => {
+    //   if (getMainTimer() === true) {
+    //     await getMainTimer();
+    //   }
+    // })();
+
+    // getMainTimer();
+    getCurrentOwnerLogo();
+    return () => {
+      stopTimer();
+    };
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -307,10 +327,9 @@ export default function Captains() {
       </div>
 
       <div className="captainScCurrentUser">
-        {allBidders.map((item,index)=>{
-          if(item.ownerName==localStorage.getItem("userName")){
-            return <h1>{index+1}</h1>
-
+        {allBidders.map((item, index) => {
+          if (item.ownerName == localStorage.getItem("userName")) {
+            return <h1>{index + 1}</h1>;
           }
         })}
         <img src={ownerLogo} alt="company logo" />
