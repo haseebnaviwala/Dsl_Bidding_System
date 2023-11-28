@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Captains.css";
 import DslLogo from "../assets/images/logo.png";
-import CompanyLogo from "../assets/images/chamdia group.png";
+// import CompanyLogo from "../assets/images/chamdia group.png";
 import { gsap } from "gsap";
 import {
   addDoc,
@@ -13,7 +13,6 @@ import {
   onSnapshot,
   orderBy,
   query,
-  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -26,6 +25,8 @@ export default function Captains() {
   const [index, setIndex] = useState(0);
   const [ownerLogo, setOwnerLogo] = useState("");
   const [topThreeBidders, setTopThreeBidders] = useState([]);
+  const [allBidders, setAllBidders] = useState([]);
+  const [ownerPosition, setOwnerPosition] = useState("");
 
   function addAmount(bid) {
     const sum = amount + bid;
@@ -158,7 +159,7 @@ export default function Captains() {
     );
 
     const querySnapshot = await getDocs(q);
-    console.log(querySnapshot);
+    // console.log(querySnapshot);
     if (querySnapshot.docs?.length) {
       const docId = querySnapshot.docs[0].id;
       return {
@@ -170,7 +171,7 @@ export default function Captains() {
   };
 
   const getTopThreeBidders = async () => {
-    console.log(captainData[index].username)
+    // console.log(captainData[index].username)
     const q = query(
       collection(db, "bidAmount"),
       where("captainName", "==", captainData[index].username),
@@ -186,8 +187,30 @@ export default function Captains() {
     });
   };
 
+  const getAllBidders = async () => {
+    const q = query(
+      collection(db, "bidAmount"),
+      where("captainName", "==", captainData[index].username),
+      orderBy("bidAmount", "desc")
+    );
+
+    onSnapshot(q, (query) => {
+      const all14Bidders = query.docs.map((document) => {
+        // console.log(document.data())
+        return document.data();
+      });
+      setAllBidders(all14Bidders);
+    });
+  };
+
+  const getOwnerPosition = () => {
+    
+
+
+  }
+
   const addOrUpdateBid = async (amount) => {
-    console.log(amount);
+    // console.log(amount);
     const existingBid = await getCaptainBidForUser();
     if (existingBid) {
       await updateDoc(doc(db, "bidAmount", existingBid.id), {
@@ -218,6 +241,20 @@ export default function Captains() {
       setIndex(index + 1);
       await handleOwnerTimer(TIMER_STATES.RESET);
       setAmount(300000);
+
+      const end_timer = doc(db, "timer", "timer_2");
+
+      await updateDoc(end_timer, {
+        timer_end: true
+      });
+
+
+      const t3 = gsap.timeline();
+
+      t3.to(".bidding-modal", {
+        transform: "translateX(-1000px)",
+        duration: 0.5,
+      });
     }
   };
 
@@ -230,11 +267,13 @@ export default function Captains() {
   }, [timer]);
 
   useEffect(() => {
-    console.log(captainData)
+    // console.log(captainData)
     if (captainData.length) {
       getTopThreeBidders();
+      getAllBidders();
     }
-  }, [captainData]);
+    // console.log(allBidders);
+  }, [captainData, index]);
 
   return (
     <div className="captainScMainContainer">
@@ -268,7 +307,12 @@ export default function Captains() {
       </div>
 
       <div className="captainScCurrentUser">
-        <h1>8</h1>
+        {allBidders.map((item,index)=>{
+          if(item.ownerName==localStorage.getItem("userName")){
+            return <h1>{index+1}</h1>
+
+          }
+        })}
         <img src={ownerLogo} alt="company logo" />
       </div>
 

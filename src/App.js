@@ -42,7 +42,7 @@ function App() {
         ></Route>
 
         <Route
-          path="/owner"
+          path="/login"
           element={
             <div>
               <Login></Login>
