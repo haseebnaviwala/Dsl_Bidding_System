@@ -52,7 +52,7 @@
 }
 
 .admin-text h1::before{
-    content: "HASAN CHAMDIA";
+    content: inherit;
     position: absolute;
     transform: translate(0px, 80px);
     z-index: -1;
@@ -65,7 +65,7 @@
 }
 
 .admin-text h1::after{
-    content: "HASAN CHAMDIA";
+    content: inherit;
     position: absolute;
     transform: translate(0px, 160px);
     z-index: -40;
@@ -94,7 +94,7 @@
 
 .admin-captain img{
     width: 500px;
-    transform: translateY(-100px);
+    transform: translateY(-200px);
 }
 
 .admin-first{
