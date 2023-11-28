@@ -8,6 +8,7 @@ import Welldone from "./components/welldone";
 import CameraScreen from "./components/CameraScreen";
 import Captains from "./components/Captains";
 import AdminControls from "./components/AdminControls";
+import CaptainWinner from "./components/captainWinner";
 
 function App() {
   return (
@@ -86,6 +87,14 @@ function App() {
           }
         ></Route>
 
+        <Route
+          path="/captainWinner"
+          element={
+            <div>
+              <CaptainWinner></CaptainWinner>
+            </div>
+          }
+        ></Route>
       </Routes>
 
       {/* <AdminControls /> */}

@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+.captainWinner{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow: hidden;
+    background-image: url('../assets/background_final.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins';
+}
+
+.captainWinner-logo{
+    height: fit-content;
+}
+
+.captainWinner-logo img{
+    width: 12%;
+    margin-top: 2rem;
+    margin-left: 2rem;
+}
+
+.captainWinner-body{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.captainWinner-text{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.captainWinner-text h1{
+    position: absolute;
+    top: -60px;
+    font-size: 9rem;
+    color: white;
+    text-transform: uppercase;
+    z-index: 1;
+}
+
+.captainWinner-text h1::before{
+    content: inherit;
+    position: absolute;
+    transform: translate(0px, 80px);
+    z-index: -1;
+    background: -webkit-linear-gradient(rgba(255, 255, 255, 0), #ffffff30);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 8rem;
+    left: 3rem;
+}
+
+.captainWinner-text h1::after{
+    content: inherit;
+    position: absolute;
+    transform: translate(0px, 160px);
+    z-index: -40;
+    background: -webkit-linear-gradient(rgba(0, 0, 0, 0), #ffffff10);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    left: 6rem;
+    font-size: 7rem;
+}
+
+.captainWinner-result{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    z-index: 1000;
+}
+
+.captainWinner-captain{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.captainWinner-captain img{
+    width: 500px;
+    transform: translateY(-200px);
+}
+
+.captainWinner-first{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transform: translateY(-100px);
+}
+
+.captainWinner-first img{
+    width: 500px;
+    filter: drop-shadow(5px 5px 2px #000000);
+}

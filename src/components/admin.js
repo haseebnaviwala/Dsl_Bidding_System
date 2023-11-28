@@ -44,12 +44,12 @@ export default function Admin() {
         });
     }
 
-    const getMainTimer = async () => {
-        onSnapshot(doc(db, "timer", "timer"), (doc) => {
-            console.log(doc.data());
-            return setTimerEnd(doc.data().timer_end);
-        });
-    }
+    // const getMainTimer = async () => {
+    //     onSnapshot(doc(db, "timer", "timer"), (doc) => {
+    //         console.log(doc.data());
+    //         return setTimerEnd(doc.data().timer_end);
+    //     });
+    // }
 
     const getTopThreeBidders = async () => {
         const q = query(
@@ -73,15 +73,15 @@ export default function Admin() {
             setIndex(index + 1);
 
             const changetimervalue = doc(db, "timer", "timer_2");
-            const changetimervalue2 = doc(db, "timer", "timer");
+            // const changetimervalue2 = doc(db, "timer", "timer");
 
             await updateDoc(changetimervalue, {
                 timer_end: false
             });
 
-            await updateDoc(changetimervalue2, {
-                timer_end: false
-            });
+            // await updateDoc(changetimervalue2, {
+            //     timer_end: false
+            // });
         }
     };
 
@@ -96,9 +96,9 @@ export default function Admin() {
     useEffect(() => {
         getCaptains();
         (async () => {
-            if (getTimerEnd() === true || getMainTimer() === true) {
+            if (getTimerEnd() === true) {
                 await getTimerEnd();
-                await getMainTimer();
+                // await getMainTimer();
             }
         })();
     }, []);

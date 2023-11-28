@@ -7,6 +7,7 @@ import {
   query,
   Firestore,
   doc,
+  setDoc,
 } from "firebase/firestore";
 // import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import { db } from "../firebase";
@@ -49,12 +50,19 @@ export default function AdminControls(props) {
     handleCaptainTimer(TIMER_STATES.RESET);
   };
 
+  const increaseCaptain = async () => {
+    await setDoc(doc(db, "captainIncrease", "increase"), {
+      increase: true,
+    });
+  };
+
   return (
     <div>
       <h3>Timer Control</h3>
       <button onClick={startTimer}>Start</button>
       <button onClick={stopTimer}>Stop</button>
       <button onClick={resetTimer}>Reset</button>
+      <button onClick={increaseCaptain}>Increase</button>
     </div>
   );
 }

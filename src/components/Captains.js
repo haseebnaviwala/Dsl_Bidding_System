@@ -26,7 +26,7 @@ export default function Captains() {
   const [ownerLogo, setOwnerLogo] = useState("");
   const [topThreeBidders, setTopThreeBidders] = useState([]);
   const [allBidders, setAllBidders] = useState([]);
-  const [timerEnd, setTimerEnd] = useState(false);
+  const [increase, setIncrease] = useState(false);
 
   function addAmount(bid) {
     const sum = amount + bid;
@@ -142,6 +142,13 @@ export default function Captains() {
     });
   }
 
+  const getIncreaseCaptain = async () => {
+    onSnapshot(doc(db, "captainIncrease", "increase"), (doc) => {
+      console.log(doc.data());
+      return setIncrease(doc.data().increase);
+    });
+  }
+
   // const getMainTimer = async () => {
   //   onSnapshot(doc(db, "timer", "timer"), (doc) => {
   //     console.log(doc.data());
@@ -243,6 +250,7 @@ export default function Captains() {
 
       const end_timer = doc(db, "timer", "timer_2");
       const changetimervalue2 = doc(db, "timer", "timer");
+      const changeIncrease = doc(db, "captainIncrease", "increase");
 
       await updateDoc(end_timer, {
         timer_end: true,
@@ -252,6 +260,10 @@ export default function Captains() {
         timer_end: false,
       });
 
+      await updateDoc(changeIncrease, {
+        increase: false,
+      });
+
       const t3 = gsap.timeline();
 
       t3.to(".bidding-modal", {
@@ -259,11 +271,14 @@ export default function Captains() {
         duration: 0.5,
       });
     }
+
+    handleOwnerTimer(TIMER_STATES.RESET);
   };
 
   useEffect(() => {
     getCaptains();
     getTimerData();
+    getIncreaseCaptain();
 
     // (async () => {
     //   if (getMainTimer() === true) {
@@ -294,6 +309,14 @@ export default function Captains() {
     }
     // console.log(allBidders);
   }, [captainData, index]);
+
+  useEffect(() => {
+    (async () => {
+      if (increase === true) {
+        await getNextCaptain();
+      }
+    })();
+  }, [increase]);
 
   return (
     <div className="captainScMainContainer">
