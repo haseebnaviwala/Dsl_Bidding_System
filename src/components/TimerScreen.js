@@ -97,7 +97,10 @@ export default function TimerScreen() {
             </div>
           </div>
         </div>
+
+        <div className="timerVerticleLine"></div>
       </div>
+      
     </>
   );
 }

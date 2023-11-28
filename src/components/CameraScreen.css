@@ -34,6 +34,17 @@
   overflow: hidden;
 }
 
-/* .cameraCircle camera{
-  
-} */
+.cameraButton{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
