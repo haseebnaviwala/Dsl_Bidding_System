@@ -16,6 +16,7 @@ import {
     where,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { async } from "q";
 
 export default function Positions() {
 
@@ -57,19 +58,31 @@ export default function Positions() {
             setIndex(index + 1);
 
             const changetimervalue = doc(db, "timer", "timer_2");
+            // const changetimervalue2 = doc(db, "timer", "timer");
 
             await updateDoc(changetimervalue, {
                 timer_end: false
             });
+
+            // await updateDoc(changetimervalue2, {
+            //     timer_end: false
+            // });
         }
     };
 
     const getTimerEnd = async () => {
         onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
             console.log(doc.data());
-            setTimerEnd(doc.data().timer_end);
+            return setTimerEnd(doc.data().timer_end);
         });
     }
+
+    // const getMainTimer = async () => {
+    //     onSnapshot(doc(db, "timer", "timer"), (doc) => {
+    //         console.log(doc.data());
+    //         return setTimerEnd(doc.data().timer_end);
+    //     });
+    // }
 
     useEffect(() => {
         (async () => {
@@ -81,7 +94,12 @@ export default function Positions() {
 
     useEffect(() => {
         getCaptains();
-        getTimerEnd();
+        (async () => {
+            if (getTimerEnd() === true) {
+                await getTimerEnd();
+                // await getMainTimer();
+            }
+        })();
     }, []);
 
     useEffect(() => {

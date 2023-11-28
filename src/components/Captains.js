@@ -26,7 +26,7 @@ export default function Captains() {
   const [ownerLogo, setOwnerLogo] = useState("");
   const [topThreeBidders, setTopThreeBidders] = useState([]);
   const [allBidders, setAllBidders] = useState([]);
-  const [ownerPosition, setOwnerPosition] = useState("");
+  const [increase, setIncrease] = useState(false);
 
   function addAmount(bid) {
     const sum = amount + bid;
@@ -142,6 +142,28 @@ export default function Captains() {
     });
   }
 
+  const getIncreaseCaptain = async () => {
+    onSnapshot(doc(db, "captainIncrease", "increase"), (doc) => {
+      console.log(doc.data());
+      return setIncrease(doc.data().increase);
+    });
+  }
+
+  // const getMainTimer = async () => {
+  //   onSnapshot(doc(db, "timer", "timer"), (doc) => {
+  //     console.log(doc.data());
+  //     // getNextCaptain();
+  //     return setTimerEnd(doc.data().timer_end);
+  //   });
+  // };
+
+  // const getTimerEnd = async () => {
+  //   onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
+  //     console.log(doc.data());
+  //     return setTimerEnd(doc.data().timer_end);
+  //   });
+  // };
+
   const handleOwnerTimer = async (payload) => {
     const timerRef = doc(db, "timer", "timer_2");
 
@@ -203,12 +225,6 @@ export default function Captains() {
     });
   };
 
-  const getOwnerPosition = () => {
-    
-
-
-  }
-
   const addOrUpdateBid = async (amount) => {
     // console.log(amount);
     const existingBid = await getCaptainBidForUser();
@@ -226,16 +242,6 @@ export default function Captains() {
     }
   };
 
-  useEffect(() => {
-    getCaptains();
-    getTimerData();
-
-    getCurrentOwnerLogo();
-    return () => {
-      stopTimer();
-    };
-  }, []);
-
   const getNextCaptain = async () => {
     if (index <= captainData.length) {
       setIndex(index + 1);
@@ -243,11 +249,20 @@ export default function Captains() {
       setAmount(300000);
 
       const end_timer = doc(db, "timer", "timer_2");
+      const changetimervalue2 = doc(db, "timer", "timer");
+      const changeIncrease = doc(db, "captainIncrease", "increase");
 
       await updateDoc(end_timer, {
-        timer_end: true
+        timer_end: true,
       });
 
+      await updateDoc(changetimervalue2, {
+        timer_end: false,
+      });
+
+      await updateDoc(changeIncrease, {
+        increase: false,
+      });
 
       const t3 = gsap.timeline();
 
@@ -256,7 +271,27 @@ export default function Captains() {
         duration: 0.5,
       });
     }
+
+    handleOwnerTimer(TIMER_STATES.RESET);
   };
+
+  useEffect(() => {
+    getCaptains();
+    getTimerData();
+    getIncreaseCaptain();
+
+    // (async () => {
+    //   if (getMainTimer() === true) {
+    //     await getMainTimer();
+    //   }
+    // })();
+
+    // getMainTimer();
+    getCurrentOwnerLogo();
+    return () => {
+      stopTimer();
+    };
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -274,6 +309,14 @@ export default function Captains() {
     }
     // console.log(allBidders);
   }, [captainData, index]);
+
+  useEffect(() => {
+    (async () => {
+      if (increase === true) {
+        await getNextCaptain();
+      }
+    })();
+  }, [increase]);
 
   return (
     <div className="captainScMainContainer">
@@ -307,10 +350,9 @@ export default function Captains() {
       </div>
 
       <div className="captainScCurrentUser">
-        {allBidders.map((item,index)=>{
-          if(item.ownerName==localStorage.getItem("userName")){
-            return <h1>{index+1}</h1>
-
+        {allBidders.map((item, index) => {
+          if (item.ownerName == localStorage.getItem("userName")) {
+            return <h1>{index + 1}</h1>;
           }
         })}
         <img src={ownerLogo} alt="company logo" />

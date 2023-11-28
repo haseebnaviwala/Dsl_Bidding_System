@@ -44,6 +44,13 @@ export default function Admin() {
         });
     }
 
+    // const getMainTimer = async () => {
+    //     onSnapshot(doc(db, "timer", "timer"), (doc) => {
+    //         console.log(doc.data());
+    //         return setTimerEnd(doc.data().timer_end);
+    //     });
+    // }
+
     const getTopThreeBidders = async () => {
         const q = query(
             collection(db, "bidAmount"),
@@ -63,27 +70,37 @@ export default function Admin() {
 
     const getNextCaptain = async () => {
         if (index <= captainData.length) {
-          setIndex(index + 1);
-    
-          const changetimervalue = doc(db, "timer", "timer_2");
-    
-          await updateDoc(changetimervalue, {
-            timer_end: false
-          });
+            setIndex(index + 1);
+
+            const changetimervalue = doc(db, "timer", "timer_2");
+            // const changetimervalue2 = doc(db, "timer", "timer");
+
+            await updateDoc(changetimervalue, {
+                timer_end: false
+            });
+
+            // await updateDoc(changetimervalue2, {
+            //     timer_end: false
+            // });
         }
-      };
+    };
 
     useEffect(() => {
-    (async () => {
-        if (timerEnd === true) {
-        await getNextCaptain();
-        }
-    })();
+        (async () => {
+            if (timerEnd === true) {
+                await getNextCaptain();
+            }
+        })();
     }, [timerEnd]);
 
     useEffect(() => {
         getCaptains();
-        getTimerEnd();
+        (async () => {
+            if (getTimerEnd() === true) {
+                await getTimerEnd();
+                // await getMainTimer();
+            }
+        })();
     }, []);
 
     useEffect(() => {

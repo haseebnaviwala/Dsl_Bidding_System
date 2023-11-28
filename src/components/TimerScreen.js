@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import "./TimerScreen.css";
 import DslLogo from "../assets/images/logo.png";
 import TimerCharacter from "../assets/images/timer-character.png";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collection, onSnapshot, query, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { TIMER_VALUE_IN_SECS } from "./Contants";
 
 export default function TimerScreen() {
   const [timer, setTimer] = useState(TIMER_VALUE_IN_SECS);
+  const [timerEnd, setTimerEnd] = useState(false);
   const remainingTime = useRef();
 
   const timerFormat = (time) => {
@@ -72,12 +73,28 @@ export default function TimerScreen() {
     });
   }
 
+  const setTimerTrue = async () => {
+    const end_timer = doc(db, "timer", "timer");
+
+      await updateDoc(end_timer, {
+        timer_end: true
+      });
+  }
+
   useEffect(() => {
     getTimerData();
     return () => {
       stopTimer();
     };
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (timer === 0) {
+        await setTimerTrue();
+      }
+    })();
+  }, [timer]);
 
   return (
     <>
