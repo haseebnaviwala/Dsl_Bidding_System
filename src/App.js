@@ -9,6 +9,7 @@ import CameraScreen from "./components/CameraScreen";
 import Captains from "./components/Captains";
 import AdminControls from "./components/AdminControls";
 import CaptainWinner from "./components/captainWinner";
+import Thankyou from "./components/Thankyou";
 
 function App() {
   return (

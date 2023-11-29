@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Captains.css";
 import DslLogo from "../assets/images/logo.png";
-// import CompanyLogo from "../assets/images/chamdia group.png";
 import { gsap } from "gsap";
 import {
   addDoc,
@@ -18,6 +17,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { CAPTAINS_TIMER_IN_SECS, TIMER_STATES } from "./Contants";
+import Thankyou from "./Thankyou";
+import CaptainWinner from "./captainWinner";
 
 export default function Captains() {
   const [amount, setAmount] = useState(300000);
@@ -26,10 +27,9 @@ export default function Captains() {
   const [ownerLogo, setOwnerLogo] = useState("");
   const [topThreeBidders, setTopThreeBidders] = useState([]);
   const [allBidders, setAllBidders] = useState([]);
-  // const [captainBooked, setCaptainBooked] = useState([]);
   const [increase, setIncrease] = useState(false);
-  const [remainingCaptains, setRemainingCaptains] = useState([]);
-  const [remainingCaptainsIndex, setRemainingCaptainsIndex] = useState(0);
+  const [showWinner, setShowWinner] = useState(false);
+  const winnerTimer = useRef();
 
   function addAmount(bid) {
     const sum = amount + bid;
@@ -66,10 +66,8 @@ export default function Captains() {
     getDoc(doc(db, "Owners", localStorage.getItem("userName")))
       .then((docu) => {
         if (docu.exists()) {
-          // console.log(docu.data().url);
           setOwnerLogo(docu.data().url);
         } else {
-          // alert("Owner Not Available");
         }
       })
       .catch((error) => {
@@ -147,25 +145,10 @@ export default function Captains() {
 
   const getIncreaseCaptain = async () => {
     onSnapshot(doc(db, "captainIncrease", "increase"), (doc) => {
-      console.log(doc.data());
+      // console.log(doc.data());
       return setIncrease(doc.data().increase);
     });
   };
-
-  // const getMainTimer = async () => {
-  //   onSnapshot(doc(db, "timer", "timer"), (doc) => {
-  //     console.log(doc.data());
-  //     // getNextCaptain();
-  //     return setTimerEnd(doc.data().timer_end);
-  //   });
-  // };
-
-  // const getTimerEnd = async () => {
-  //   onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
-  //     console.log(doc.data());
-  //     return setTimerEnd(doc.data().timer_end);
-  //   });
-  // };
 
   const handleOwnerTimer = async (payload) => {
     const timerRef = doc(db, "timer", "timer_2");
@@ -176,7 +159,6 @@ export default function Captains() {
   const getCaptainBidForUser = async () => {
     const captainName = captainData[index].username;
     const userName = localStorage.getItem("userName");
-    // console.log({ captainName, userName });
     const q = query(
       collection(db, "bidAmount"),
       where("ownerName", "==", localStorage.getItem("userName")),
@@ -184,7 +166,6 @@ export default function Captains() {
     );
 
     const querySnapshot = await getDocs(q);
-    // console.log(querySnapshot);
     if (querySnapshot.docs?.length) {
       const docId = querySnapshot.docs[0].id;
       return {
@@ -196,7 +177,6 @@ export default function Captains() {
   };
 
   const getTopThreeBidders = async () => {
-    // console.log(captainData[index].username)
     const q = query(
       collection(db, "bidAmount"),
       where("captainName", "==", captainData[index].username),
@@ -221,31 +201,13 @@ export default function Captains() {
 
     onSnapshot(q, (query) => {
       const all14Bidders = query.docs.map((document) => {
-        // console.log(document.data())
         return document.data();
       });
       setAllBidders(all14Bidders);
     });
   };
 
-  // const getCaptainBooked = async () => {
-  //   const q = query(
-  //     collection(db, "bidAmount"),
-  //     where("captainName", "==", captainData[index].username),
-  //     orderBy("bidAmount", "desc")
-  //   );
-
-  //   onSnapshot(q, (query) => {
-  //     const all14Bidders = query.docs.map((document) => {
-  //       // console.log(document.data())
-  //       return document.data();
-  //     });
-  //     setCaptainBooked(all14Bidders);
-  //   });
-  // };
-
   const addOrUpdateBid = async (amount) => {
-    // console.log(amount);
     const existingBid = await getCaptainBidForUser();
     if (existingBid) {
       await updateDoc(doc(db, "bidAmount", existingBid.id), {
@@ -262,6 +224,8 @@ export default function Captains() {
   };
 
   const getNextCaptain = async () => {
+    // setShowWinner(increase);
+    // getWinnerCaptain();
     if (index <= captainData.length) {
       if (index < 13) {
         setIndex(index + 1);
@@ -269,11 +233,9 @@ export default function Captains() {
       if (index === 13) {
         const indexValue = 0;
         setIndex(indexValue);
-        console.log(index);
       }
       await handleOwnerTimer(TIMER_STATES.RESET);
       setAmount(300000);
-      // isCaptainBooked();
 
       const end_timer = doc(db, "timer", "timer_2");
       const changetimervalue2 = doc(db, "timer", "timer");
@@ -302,30 +264,42 @@ export default function Captains() {
     handleOwnerTimer(TIMER_STATES.RESET);
   };
 
-  // const isCaptainBooked = async () => {
-  //   // var captains = [];
-  //   if (index.length == 13) {
-  //     for (let i = 0; i < captainData.length; i++) {
-  //       console.log(captainData);
-  //       if (
-  //         captainData[i].username !==
-  //         (allBidders[i].captainName == undefined)
-  //       ) {
-  //         // captains.push(captainData[i].username)
-  //         // captainData.push(captainData[i]);
-  //         console.log(captainData[i]);
-  //         setCaptainData((current) => [...current, captainData[i]]);
-  //       }
-  //     }
+  const getEndProgram = async () => {
+    onSnapshot(doc(db, "endProgram", "end"), (doc) => {
+      // console.log(doc.data());
+
+      if (doc.data().end === true) {
+        const t1 = gsap.timeline();
+
+        t1.to(".captainScMainContainer", {
+          display: "none",
+        }).to(".thankyou", {
+          display: "flex",
+        });
+      }
+    });
+  };
+
+  // const getWinnerCaptain = async () => {
+    
+  //   if (showWinner === true) {
+  //     console.log("true running");
+  //     const t1 = gsap.timeline();
+  //     t1.to(".captainScMainContainer", {
+  //       display: "none",
+  //     }).to(".showWinner", {
+  //       display: "flex",
+  //     });
   //   }
 
-  //   console.log(captainData);
-  //   // setRemainingCaptains(captains);
-  // };
-
-  // const checkCaptain = async () => {
-  //   if (captainBooked.length === 0) {
-  //     setRemainingCaptain(index);
+  //   else{
+  //     console.log("else running");
+  //     const t1 = gsap.timeline();
+  //     t1.to(".captainScMainContainer", {
+  //       display: "block",
+  //     }).to(".showWinner", {
+  //       display: "none",
+  //     });
   //   }
   // };
 
@@ -333,20 +307,22 @@ export default function Captains() {
     getCaptains();
     getTimerData();
     getIncreaseCaptain();
-    // isCaptainBooked();
-
-    // (async () => {
-    //   if (getMainTimer() === true) {
-    //     await getMainTimer();
-    //   }
-    // })();
-
-    // getMainTimer();
+    getEndProgram();
     getCurrentOwnerLogo();
+
     return () => {
       stopTimer();
     };
   }, []);
+
+  // useEffect(() => {
+  //   getWinnerCaptain();
+  //   winnerTimer.current = setInterval(() => {
+  //     console.log(showWinner);
+  //     setShowWinner(false);
+  //   }, 3000);
+  //   return () => clearInterval(winnerTimer.current);
+  // }, [increase]);
 
   useEffect(() => {
     (async () => {
@@ -357,13 +333,10 @@ export default function Captains() {
   }, [timer]);
 
   useEffect(() => {
-    // console.log(captainData)
     if (captainData.length) {
       getTopThreeBidders();
       getAllBidders();
-      // isCaptainBooked();
     }
-    // console.log(allBidders);
   }, [captainData, index]);
 
   useEffect(() => {
@@ -375,73 +348,83 @@ export default function Captains() {
   }, [increase]);
 
   return (
-    <div className="captainScMainContainer">
-      <div className="captainScDslLogo">
-        <img src={DslLogo} alt="dsl-logo" />
-      </div>
-
-      <div className="captainScSubContainer">
-        <div className="captainScTextAndBtn">
-          <div className="captainScText">{captainData[index]?.username}</div>
-
-          <div className="captainScBtn">
-            <button onClick={openBidding}>MINIMUM BID</button>
-          </div>
+    <>
+      <div className="captainScMainContainer">
+        <div className="captainScDslLogo">
+          <img src={DslLogo} alt="dsl-logo" />
         </div>
 
-        <div className="captainScCharacter">
-          <img src={captainData[index]?.url} />
-        </div>
-      </div>
+        <div className="captainScSubContainer">
+          <div className="captainScTextAndBtn">
+            <div className="captainScText">{captainData[index]?.username}</div>
 
-      <div className="captainsScCompanyLogo">
-        {topThreeBidders.map((item, index) => {
-          return (
-            <div className="captainsScPosition">
-              <h1>{index + 1}</h1>
-              <img src={item.ownerLogo} alt="company logo" />
+            <div className="captainScBtn">
+              <button onClick={openBidding}>MINIMUM BID</button>
             </div>
-          );
-        })}
-      </div>
-
-      <div className="captainScCurrentUser">
-        {allBidders.map((item, index) => {
-          if (item.ownerName == localStorage.getItem("userName")) {
-            return <h1>{index + 1}</h1>;
-          }
-        })}
-        <img src={ownerLogo} alt="company logo" />
-      </div>
-
-      <div className="ownerTimer">
-        <p>{timerFormat(timer)}</p>
-      </div>
-
-      <div className="bidding-modal">
-        <div className="bid-input">
-          <input type="text" value={amount} disabled></input>
-          <button onClick={() => addAmount(10000)}>+ 10,000</button>
-        </div>
-        <div className="bid-direct">
-          <div>
-            <button onClick={() => addAmount(50000)}>+ 50,000</button>
-            <button onClick={() => addAmount(100000)}>+ 100,000</button>
           </div>
-          <div>
-            <button onClick={() => addAmount(200000)}>+ 200,000</button>
-            <button onClick={() => addAmount(300000)}>+ 300,000</button>
-          </div>
-          <div>
-            <button onClick={() => addAmount(400000)}>+ 400,000</button>
-            <button onClick={() => addAmount(500000)}>+ 500,000</button>
-          </div>
-          <div>
-            <button onClick={() => addAmount(600000)}>+ 600,000</button>
-            <button onClick={() => addAmount(700000)}>+ 700,000</button>
+
+          <div className="captainScCharacter">
+            <img src={captainData[index]?.url} />
           </div>
         </div>
+
+        <div className="captainsScCompanyLogo">
+          {topThreeBidders.map((item, index) => {
+            return (
+              <div className="captainsScPosition">
+                <h1>{index + 1}</h1>
+                <img src={item.ownerLogo} alt="company logo" />
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="captainScCurrentUser">
+          {allBidders.map((item, index) => {
+            if (item.ownerName == localStorage.getItem("userName")) {
+              return <h1>{index + 1}</h1>;
+            }
+          })}
+          <img src={ownerLogo} alt="company logo" />
+        </div>
+
+        <div className="ownerTimer">
+          <p>{timerFormat(timer)}</p>
+        </div>
+
+        <div className="bidding-modal">
+          <div className="bid-input">
+            <input type="text" value={amount} disabled></input>
+            <button onClick={() => addAmount(10000)}>+ 10,000</button>
+          </div>
+          <div className="bid-direct">
+            <div>
+              <button onClick={() => addAmount(50000)}>+ 50,000</button>
+              <button onClick={() => addAmount(100000)}>+ 100,000</button>
+            </div>
+            <div>
+              <button onClick={() => addAmount(200000)}>+ 200,000</button>
+              <button onClick={() => addAmount(300000)}>+ 300,000</button>
+            </div>
+            <div>
+              <button onClick={() => addAmount(400000)}>+ 400,000</button>
+              <button onClick={() => addAmount(500000)}>+ 500,000</button>
+            </div>
+            <div>
+              <button onClick={() => addAmount(600000)}>+ 600,000</button>
+              <button onClick={() => addAmount(700000)}>+ 700,000</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div className="thankyou" style={{ display: "none" }}>
+        <Thankyou></Thankyou>
+      </div>
+
+      <div className="showWinner" style={{ display: "none" }}>
+        <CaptainWinner></CaptainWinner>
+      </div>
+    </>
   );
 }

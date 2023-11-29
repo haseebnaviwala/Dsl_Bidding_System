@@ -56,6 +56,18 @@ export default function AdminControls(props) {
     });
   };
 
+  const endProgram = async () => {
+    await setDoc(doc(db, "endProgram", "end"), {
+      end: true,
+    });
+  }
+
+  // const increaseWinnerCaptain = async () => {
+  //   await setDoc(doc(db, "winnerIncrease", "increase"), {
+  //     increase: true,
+  //   });
+  // };
+
   return (
     <div>
       <h3>Timer Control</h3>
@@ -63,6 +75,8 @@ export default function AdminControls(props) {
       <button onClick={stopTimer}>Stop</button>
       <button onClick={resetTimer}>Reset</button>
       <button onClick={increaseCaptain}>Increase</button>
+      {/* <button onClick={increaseWinnerCaptain}>Increase Winner Captain</button> */}
+      <button onClick={endProgram}>End Program</button>
     </div>
   );
 }
