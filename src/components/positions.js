@@ -41,6 +41,21 @@ export default function Positions() {
     });
   };
 
+  const resetIndexOnDatabase = async () => {
+    const timerRef = doc(db, "timer", "timer_2");
+    await updateDoc(timerRef, { currentIndex: 0 });
+  };
+
+  const listenForIndexUpdate = async (value) => {
+    const currentIndex = value?.currentIndex;
+    if (currentIndex && currentIndex >= 0) {
+      setIndex(currentIndex);
+    } else {
+      setIndex(0);
+      await resetIndexOnDatabase();
+    }
+  };
+
   function getCaptains() {
     const captainsCollection = collection(db, "captains");
     const captainsData = [];
@@ -53,34 +68,11 @@ export default function Positions() {
     });
   }
 
-  const getNextCaptain = async () => {
-    if (index <= captainData.length) {
-      if (index < 13) {
-        setIndex(index + 1);
-      }
-      if (index === 13) {
-        const indexValue = 0;
-        setIndex(indexValue);
-        // console.log(index);
-      }
-
-      const changetimervalue = doc(db, "timer", "timer_2");
-      // const changetimervalue2 = doc(db, "timer", "timer");
-
-      await updateDoc(changetimervalue, {
-        timer_end: false,
-      });
-
-      // await updateDoc(changetimervalue2, {
-      //     timer_end: false
-      // });
-    }
-  };
-
-  const getTimerEnd = async () => {
+  const listenForTimer2 = async () => {
     onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
       console.log(doc.data());
-      return setTimerEnd(doc.data().timer_end);
+      listenForIndexUpdate(doc.data());
+      // return setTimerEnd(doc.data().timer_end);
     });
   };
 
@@ -108,22 +100,15 @@ export default function Positions() {
   // }
 
   useEffect(() => {
-    (async () => {
-      if (timerEnd === true) {
-        await getNextCaptain();
-      }
-    })();
-  }, [timerEnd]);
-
-  useEffect(() => {
     getCaptains();
     getEndProgram();
-    (async () => {
-      if (getTimerEnd() === true) {
-        await getTimerEnd();
-        // await getMainTimer();
-      }
-    })();
+    // (async () => {
+    //   if (listenForTimer2() === true) {
+    //     await listenForTimer2();
+    //     // await getMainTimer();
+    //   }
+    // })();
+    listenForTimer2();
   }, []);
 
   useEffect(() => {
