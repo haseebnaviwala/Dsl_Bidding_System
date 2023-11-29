@@ -263,9 +263,17 @@ export default function Captains() {
 
   const getNextCaptain = async () => {
     if (index <= captainData.length) {
-      setIndex(index + 1);
+      if (index < 13) {
+        setIndex(index + 1);
+      }
+      if (index === 13) {
+        const indexValue = 0;
+        setIndex(indexValue);
+        console.log(index);
+      }
       await handleOwnerTimer(TIMER_STATES.RESET);
       setAmount(300000);
+      // isCaptainBooked();
 
       const end_timer = doc(db, "timer", "timer_2");
       const changetimervalue2 = doc(db, "timer", "timer");
@@ -290,24 +298,30 @@ export default function Captains() {
         duration: 0.5,
       });
     }
-    else{
-      if(remainingCaptains.length){
-        setRemainingCaptainsIndex(remainingCaptainsIndex + 1)
-      }
-    }
 
     handleOwnerTimer(TIMER_STATES.RESET);
   };
 
-  const isCaptainBooked = async () => {
-    var captains = [];
-    for(let i=0; i < captainData.length; i++){
-      if(captainData[i].username != allBidders[i].captainName){
-        captains.push(captainData[i].username)
-      }
-    }
-    setRemainingCaptains(captains);
-  }
+  // const isCaptainBooked = async () => {
+  //   // var captains = [];
+  //   if (index.length == 13) {
+  //     for (let i = 0; i < captainData.length; i++) {
+  //       console.log(captainData);
+  //       if (
+  //         captainData[i].username !==
+  //         (allBidders[i].captainName == undefined)
+  //       ) {
+  //         // captains.push(captainData[i].username)
+  //         // captainData.push(captainData[i]);
+  //         console.log(captainData[i]);
+  //         setCaptainData((current) => [...current, captainData[i]]);
+  //       }
+  //     }
+  //   }
+
+  //   console.log(captainData);
+  //   // setRemainingCaptains(captains);
+  // };
 
   // const checkCaptain = async () => {
   //   if (captainBooked.length === 0) {
@@ -319,7 +333,7 @@ export default function Captains() {
     getCaptains();
     getTimerData();
     getIncreaseCaptain();
-    // getCaptainBooked();
+    // isCaptainBooked();
 
     // (async () => {
     //   if (getMainTimer() === true) {
@@ -347,6 +361,7 @@ export default function Captains() {
     if (captainData.length) {
       getTopThreeBidders();
       getAllBidders();
+      // isCaptainBooked();
     }
     // console.log(allBidders);
   }, [captainData, index]);
