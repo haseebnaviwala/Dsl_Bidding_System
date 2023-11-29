@@ -144,6 +144,10 @@ export default function Admin() {
           </div>
         </div>
 
+        <div className="ownerTimer">
+          <p>02:00</p>
+        </div>
+
         <div className="admin-result">
           {/* <div className="admin-first">
                     <h1>{index + 1}</h1>
