@@ -39,6 +39,44 @@ export default function Captains() {
     addOrUpdateBid(sum);
   }
 
+  const shouldWeUpdateIndex = (currentLocalIndex, databaseIndex) => {
+    const updatedIndex = databaseIndex + 1;
+    if (Math.abs(updatedIndex - currentLocalIndex) > 1) {
+      return false;
+    }
+    return true;
+  };
+
+  const updateIndexOnDatabase = async () => {
+    const timerRef = doc(db, "timer", "timer_2");
+    const value = await getDoc(timerRef);
+    if (value?.data()?.currentIndex >= 0) {
+      const databaseIndex = value.data().currentIndex;
+      if (shouldWeUpdateIndex(index, databaseIndex)) {
+        await updateDoc(timerRef, { currentIndex: databaseIndex + 1 });
+      }
+    }
+  };
+
+  const resetIndexOnDatabase = async () => {
+    const timerRef = doc(db, "timer", "timer_2");
+    await updateDoc(timerRef, { currentIndex: 0 });
+  };
+
+  const listenForIndexUpdate = async (value) => {
+    const currentIndex = value?.currentIndex;
+    if (currentIndex && currentIndex >= 0) {
+      if (currentIndex === 13) {
+        resetIndexOnDatabase();
+      } else {
+        setIndex(currentIndex);
+      }
+    } else {
+      setIndex(0);
+      await resetIndexOnDatabase();
+    }
+  };
+
   function openBidding() {
     const initBid = amount;
     const t2 = gsap.timeline();
@@ -137,7 +175,7 @@ export default function Captains() {
           return id === "timer_2";
         })
         ?.data();
-
+      listenForIndexUpdate(timerData);
       toggleTimer(timerData.start_stop);
       resetClock(timerData.reset);
     });
@@ -228,12 +266,10 @@ export default function Captains() {
     // getWinnerCaptain();
     if (index <= captainData.length) {
       if (index < 13) {
-        setIndex(index + 1);
+        // setIndex(index + 1);
+        await updateIndexOnDatabase();
       }
-      if (index === 13) {
-        const indexValue = 0;
-        setIndex(indexValue);
-      }
+
       await handleOwnerTimer(TIMER_STATES.RESET);
       setAmount(300000);
 
@@ -281,7 +317,7 @@ export default function Captains() {
   };
 
   // const getWinnerCaptain = async () => {
-    
+
   //   if (showWinner === true) {
   //     console.log("true running");
   //     const t1 = gsap.timeline();
@@ -306,7 +342,7 @@ export default function Captains() {
   useEffect(() => {
     getCaptains();
     getTimerData();
-    getIncreaseCaptain();
+    // getIncreaseCaptain();
     getEndProgram();
     getCurrentOwnerLogo();
 
@@ -341,9 +377,9 @@ export default function Captains() {
 
   useEffect(() => {
     (async () => {
-      if (increase === true) {
-        await getNextCaptain();
-      }
+      // if (increase === true) {
+      //   await getNextCaptain();
+      // }
     })();
   }, [increase]);
 

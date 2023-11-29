@@ -14,4 +14,4 @@ export const TIMER_STATES = {
 };
 
 export const TIMER_VALUE_IN_SECS = 180;
-export const CAPTAINS_TIMER_IN_SECS = 30;
+export const CAPTAINS_TIMER_IN_SECS = 10;

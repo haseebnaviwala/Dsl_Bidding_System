@@ -38,10 +38,35 @@ export default function Admin() {
     });
   }
 
+  const updateIndexOnDatabase = async () => {
+    const timerRef = doc(db, "timer", "timer_2");
+    const value = await getDoc(timerRef);
+    if (value?.data()?.currentIndex >= 0) {
+      const indexValue = value.data().currentIndex;
+      await updateDoc(timerRef, { currentIndex: indexValue + 1 });
+    }
+  };
+
+  const resetIndexOnDatabase = async () => {
+    const timerRef = doc(db, "timer", "timer_2");
+    await updateDoc(timerRef, { currentIndex: 0 });
+  };
+
+  const listenForIndexUpdate = async (value) => {
+    const currentIndex = value?.currentIndex;
+    if (currentIndex && currentIndex >= 0) {
+      setIndex(currentIndex);
+    } else {
+      setIndex(0);
+      await resetIndexOnDatabase();
+    }
+  };
+
   const getTimerEnd = async () => {
     onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
       console.log(doc.data());
       setTimerEnd(doc.data().timer_end);
+      listenForIndexUpdate(doc.data());
     });
   };
 
@@ -85,46 +110,15 @@ export default function Admin() {
     });
   };
 
-  const getNextCaptain = async () => {
-    if (index <= captainData.length) {
-      if (index < 13) {
-        setIndex(index + 1);
-      }
-      if (index === 13) {
-        const indexValue = 0;
-        setIndex(indexValue);
-        // console.log(index);
-      }
-
-      const changetimervalue = doc(db, "timer", "timer_2");
-      // const changetimervalue2 = doc(db, "timer", "timer");
-
-      await updateDoc(changetimervalue, {
-        timer_end: false,
-      });
-
-      // await updateDoc(changetimervalue2, {
-      //     timer_end: false
-      // });
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      if (timerEnd === true) {
-        await getNextCaptain();
-      }
-    })();
-  }, [timerEnd]);
-
   useEffect(() => {
     getCaptains();
     getEndProgram();
     (async () => {
-      if (getTimerEnd() === true) {
-        await getTimerEnd();
-        // await getMainTimer();
-      }
+      // if (getTimerEnd() === true) {
+      //   await getTimerEnd();
+      //   // await getMainTimer();
+      // }
+      getTimerEnd();
     })();
   }, []);
 
