@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./admin.css";
 import logo from "../assets/logo.png";
 import adminmascot from "../assets/login mascot.png";
@@ -19,10 +19,11 @@ import {
 import { db } from "../firebase";
 import { gsap } from "gsap";
 import Thankyou from "./Thankyou";
+import { CAPTAINS_TIMER_IN_SECS } from "./Contants";
 
 export default function Admin() {
   const [captainData, setCaptainData] = useState([]);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState();
   const [topThreeBidders, setTopThreeBidders] = useState([]);
   const [timerEnd, setTimerEnd] = useState(false);
 
@@ -38,15 +39,6 @@ export default function Admin() {
     });
   }
 
-  const updateIndexOnDatabase = async () => {
-    const timerRef = doc(db, "timer", "timer_2");
-    const value = await getDoc(timerRef);
-    if (value?.data()?.currentIndex >= 0) {
-      const indexValue = value.data().currentIndex;
-      await updateDoc(timerRef, { currentIndex: indexValue + 1 });
-    }
-  };
-
   const resetIndexOnDatabase = async () => {
     const timerRef = doc(db, "timer", "timer_2");
     await updateDoc(timerRef, { currentIndex: 0 });
@@ -54,8 +46,18 @@ export default function Admin() {
 
   const listenForIndexUpdate = async (value) => {
     const currentIndex = value?.currentIndex;
+    // if (currentIndex && currentIndex >= 0) {
+    //   setIndex(currentIndex);
+    // } else {
+    //   setIndex(0);
+    //   await resetIndexOnDatabase();
+    // }
     if (currentIndex && currentIndex >= 0) {
-      setIndex(currentIndex);
+      if (currentIndex === 14) {
+        resetIndexOnDatabase();
+      } else {
+        setIndex(currentIndex);
+      }
     } else {
       setIndex(0);
       await resetIndexOnDatabase();
@@ -86,13 +88,6 @@ export default function Admin() {
     });
   };
 
-  // const getMainTimer = async () => {
-  //     onSnapshot(doc(db, "timer", "timer"), (doc) => {
-  //         console.log(doc.data());
-  //         return setTimerEnd(doc.data().timer_end);
-  //     });
-  // }
-
   const getTopThreeBidders = async () => {
     const q = query(
       collection(db, "bidAmount"),
@@ -110,14 +105,79 @@ export default function Admin() {
     });
   };
 
+  const [timer, setTimer] = useState(CAPTAINS_TIMER_IN_SECS);
+  const remainingTime = useRef();
+
+  const timerFormat = (time) => {
+    let minutes = Math.floor((time / 60) % 60);
+    let seconds = Math.floor(time % 60);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    return minutes + ":" + seconds;
+  };
+
+  const startTimer = () => {
+    clearInterval(remainingTime.current);
+    remainingTime.current = setInterval(() => {
+      setTimer((prev) => {
+        if (prev !== 0) {
+          return prev - 1;
+        }
+        return 0;
+      });
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    clearInterval(remainingTime.current);
+  };
+
+  const onClickTimerStart = () => {
+    startTimer();
+  };
+
+  const onClickTimerStop = () => {
+    stopTimer();
+  };
+
+  const toggleTimer = (timerRunning) => {
+    const value = timerRunning;
+    if (value) {
+      onClickTimerStart();
+    } else {
+      onClickTimerStop();
+    }
+  };
+
+  const resetClock = (isReset) => {
+    if (isReset) {
+      stopTimer();
+      setTimer(CAPTAINS_TIMER_IN_SECS);
+    }
+  };
+
+  function getTimerData() {
+    const timerCollection = collection(db, "timer");
+    const queryRef = query(timerCollection);
+    onSnapshot(queryRef, (snapshot) => {
+      const timerData = snapshot.docs
+        .find(({ id }) => {
+          return id === "timer_2";
+        })
+        ?.data();
+      listenForIndexUpdate(timerData);
+      toggleTimer(timerData.start_stop);
+      resetClock(timerData.reset);
+    });
+  }
+
   useEffect(() => {
     getCaptains();
     getEndProgram();
+    getTimerData();
     (async () => {
-      // if (getTimerEnd() === true) {
-      //   await getTimerEnd();
-      //   // await getMainTimer();
-      // }
       getTimerEnd();
     })();
   }, []);
@@ -126,7 +186,6 @@ export default function Admin() {
     console.log(captainData);
     if (captainData.length) {
       getTopThreeBidders();
-      //   console.log(topThreeBidders)
     }
     console.log(topThreeBidders);
   }, [captainData, index]);
@@ -145,22 +204,10 @@ export default function Admin() {
         </div>
 
         <div className="ownerTimer">
-          <p>02:00</p>
+          <p>{timerFormat(timer)}</p>
         </div>
 
         <div className="admin-result">
-          {/* <div className="admin-first">
-                    <h1>{index + 1}</h1>
-                    <img src={topThreeBidders[0].ownerLogo} alt="first"></img>
-                </div>
-                <div className="admin-second">
-                    <h1>2</h1>
-                    <img src={ownerlogo} alt="second"></img>
-                </div>
-                <div className="admin-third">
-                    <h1>3</h1>
-                    <img src={ownerlogo} alt="second"></img>
-                </div> */}
           {topThreeBidders.map((item, index) => {
             return (
               <div className="admin-first">

@@ -12,10 +12,6 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-const getOwnerData=()=>{
-  
-}
-
   function login() {
     if (username === "" && password === "") {
       alert("Enter credentials to continue!!");
@@ -37,14 +33,14 @@ const getOwnerData=()=>{
 
               // animation for page change
 
-              alert("Done");
+              // alert("Done");
               // Page Change
               localStorage.setItem("userName", username);
             } else {
-              alert("Password Not Matched");
+              // alert("Password Not Matched");
             }
           } else {
-            alert("Owner Not Available");
+            // alert("Owner Not Available");
           }
         })
         .catch((error) => {
