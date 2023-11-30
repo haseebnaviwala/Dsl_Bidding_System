@@ -182,10 +182,23 @@ export default function Captains() {
     });
   }
 
-  const getIncreaseCaptain = async () => {
-    onSnapshot(doc(db, "captainIncrease", "increase"), (doc) => {
+  const getIncreaseCaptain = async (value) => {
+    const lastValue = value;
+    onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
+      if (doc.data().currentIndex != lastValue) {
+        const t3 = gsap.timeline();
+
+        t3.to(".bidding-modal", {
+          transform: "translateX(-1000px)",
+          duration: 0.5,
+        });
+
+        setAmount(3);
+        console.log(lastValue);
+        console.log(doc.data());
+      }
       // console.log(doc.data());
-      return setIncrease(doc.data().increase);
+      console.log(value);
     });
   };
 
@@ -264,6 +277,7 @@ export default function Captains() {
   };
 
   const getNextCaptain = async () => {
+    logoutOwner();
     if (index <= captainData.length) {
       if (index < 13) {
         await updateIndexOnDatabase();
@@ -366,10 +380,25 @@ export default function Captains() {
     }
   };
 
+  const logoutOwner = async () => {
+    if (topThreeBidders[0].ownerName === undefined) {
+      console.log("empty");
+    } else {
+      if (topThreeBidders[0].ownerName === localStorage.getItem("userName")) {
+        const t1 = gsap.timeline();
+
+        t1.to(".captainScMainContainer", {
+          display: "none",
+        }).to(".thankyou", {
+          display: "flex",
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     getCaptains();
     getTimerData();
-    // getIncreaseCaptain();
     getEndProgram();
     getCurrentOwnerLogo();
 
@@ -392,13 +421,13 @@ export default function Captains() {
     }
   }, [captainData, index]);
 
-  useEffect(() => {
-    (async () => {
-      // if (increase === true) {
-      //   await getNextCaptain();
-      // }
-    })();
-  }, [increase]);
+  // useEffect(() => {
+  //   (async () => {
+  //     // if (increase === true) {
+  //     //   await getNextCaptain();
+  //     // }
+  //   })();
+  // }, [increase]);
 
   return (
     <>
@@ -447,12 +476,16 @@ export default function Captains() {
 
         <div className="bidding-modal">
           <div className="bid-input">
-            <input type="text" value={amount.toFixed(1) + " lac"} disabled></input>
-            <button onClick={() => addAmount(0.10)}>+ 10 Thousand</button>
+            <input
+              type="text"
+              value={amount.toFixed(1) + " lac"}
+              disabled
+            ></input>
+            <button onClick={() => addAmount(0.1)}>+ 10 Thousand</button>
           </div>
           <div className="bid-direct">
             <div>
-              <button onClick={() => addAmount(0.50)}>+ 50 Thousand</button>
+              <button onClick={() => addAmount(0.5)}>+ 50 Thousand</button>
               <button onClick={() => addAmount(1)}>+ 1 lac</button>
             </div>
             <div>
