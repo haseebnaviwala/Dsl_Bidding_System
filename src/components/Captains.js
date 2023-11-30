@@ -21,7 +21,7 @@ import Thankyou from "./Thankyou";
 import CaptainWinner from "./captainWinner";
 
 export default function Captains() {
-  const [amount, setAmount] = useState(300000);
+  const [amount, setAmount] = useState(3);
   const [captainData, setCaptainData] = useState([]);
   const [index, setIndex] = useState(0);
   const [ownerLogo, setOwnerLogo] = useState("");
@@ -255,7 +255,7 @@ export default function Captains() {
     } else {
       await addDoc(collection(db, "bidAmount"), {
         captainName: captainData[index].username,
-        bidAmount: amount,
+        bidAmount: amount.toFixed(1),
         ownerName: localStorage.getItem("userName"),
         ownerLogo: ownerLogo,
       });
@@ -270,7 +270,7 @@ export default function Captains() {
       }
 
       await handleOwnerTimer(TIMER_STATES.RESET);
-      setAmount(300000);
+      setAmount(3);
 
       const end_timer = doc(db, "timer", "timer_2");
       const changetimervalue2 = doc(db, "timer", "timer");
@@ -447,25 +447,25 @@ export default function Captains() {
 
         <div className="bidding-modal">
           <div className="bid-input">
-            <input type="text" value={amount} disabled></input>
-            <button onClick={() => addAmount(10000)}>+ 10,000</button>
+            <input type="text" value={amount.toFixed(1) + " lac"} disabled></input>
+            <button onClick={() => addAmount(0.10)}>+ 10 Thousand</button>
           </div>
           <div className="bid-direct">
             <div>
-              <button onClick={() => addAmount(50000)}>+ 50,000</button>
-              <button onClick={() => addAmount(100000)}>+ 100,000</button>
+              <button onClick={() => addAmount(0.50)}>+ 50 Thousand</button>
+              <button onClick={() => addAmount(1)}>+ 1 lac</button>
             </div>
             <div>
-              <button onClick={() => addAmount(200000)}>+ 200,000</button>
-              <button onClick={() => addAmount(300000)}>+ 300,000</button>
+              <button onClick={() => addAmount(2)}>+ 2 lac</button>
+              <button onClick={() => addAmount(3)}>+ 3 lac</button>
             </div>
             <div>
-              <button onClick={() => addAmount(400000)}>+ 400,000</button>
-              <button onClick={() => addAmount(500000)}>+ 500,000</button>
+              <button onClick={() => addAmount(4)}>+ 4 lac</button>
+              <button onClick={() => addAmount(5)}>+ 5 lac</button>
             </div>
             <div>
-              <button onClick={() => addAmount(600000)}>+ 600,000</button>
-              <button onClick={() => addAmount(700000)}>+ 700,000</button>
+              <button onClick={() => addAmount(6)}>+ 6 lac</button>
+              <button onClick={() => addAmount(7)}>+ 7 lac</button>
             </div>
           </div>
         </div>
