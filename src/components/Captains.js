@@ -29,6 +29,7 @@ export default function Captains() {
   const [allBidders, setAllBidders] = useState([]);
   const [increase, setIncrease] = useState(false);
   const [showWinner, setShowWinner] = useState(false);
+  const [captainSold, setCaptainSold] = useState([]);
   const winnerTimer = useRef();
 
   function addAmount(bid) {
@@ -66,7 +67,7 @@ export default function Captains() {
   const listenForIndexUpdate = async (value) => {
     const currentIndex = value?.currentIndex;
     if (currentIndex && currentIndex >= 0) {
-      if (currentIndex === 13) {
+      if (currentIndex === 14) {
         resetIndexOnDatabase();
       } else {
         setIndex(currentIndex);
@@ -259,14 +260,12 @@ export default function Captains() {
         ownerLogo: ownerLogo,
       });
     }
+    await setWinningCaptain(amount);
   };
 
   const getNextCaptain = async () => {
-    // setShowWinner(increase);
-    // getWinnerCaptain();
     if (index <= captainData.length) {
       if (index < 13) {
-        // setIndex(index + 1);
         await updateIndexOnDatabase();
       }
 
@@ -316,28 +315,56 @@ export default function Captains() {
     });
   };
 
-  // const getWinnerCaptain = async () => {
+  const getWinningCaptain = async () => {
+    // const q = query(
+    //   collection(db, "bidAmount"),
+    //   where("captainName", "==", captainData[index].username),
+    //   orderBy("bidAmount", "desc"),
+    //   limit(1)
+    // );
 
-  //   if (showWinner === true) {
-  //     console.log("true running");
-  //     const t1 = gsap.timeline();
-  //     t1.to(".captainScMainContainer", {
-  //       display: "none",
-  //     }).to(".showWinner", {
-  //       display: "flex",
-  //     });
-  //   }
+    // onSnapshot(q, (query) => {
+    //   const topBidder = query.docs.map((document) => {
+    //     // setWinningCaptain(document.data.id);
+    //     return document.data();
+    //   });
+    //   setCaptainSold(topBidder);
+    // });
+    const captainName = captainData[index].username;
+    const userName = localStorage.getItem("userName");
+    const q = query(
+      collection(db, "winningCaptains"),
+      where("ownerName", "==", localStorage.getItem("userName")),
+      where("captainName", "==", captainData[index].username),
+      limit(1)
+    );
 
-  //   else{
-  //     console.log("else running");
-  //     const t1 = gsap.timeline();
-  //     t1.to(".captainScMainContainer", {
-  //       display: "block",
-  //     }).to(".showWinner", {
-  //       display: "none",
-  //     });
-  //   }
-  // };
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.docs?.length) {
+      const docId = querySnapshot.docs[0].id;
+      return {
+        id: docId,
+        ...querySnapshot.docs[0].data(),
+      };
+    }
+    return null;
+  };
+
+  const setWinningCaptain = async (amount) => {
+    const existingBid = await getWinningCaptain();
+    if (existingBid) {
+      await updateDoc(doc(db, "winningCaptains", existingBid.id), {
+        bidAmount: amount,
+      });
+    } else {
+      await addDoc(collection(db, "winningCaptains"), {
+        captainName: captainData[index].username,
+        bidAmount: amount,
+        ownerName: localStorage.getItem("userName"),
+        ownerLogo: ownerLogo,
+      });
+    }
+  };
 
   useEffect(() => {
     getCaptains();
@@ -350,16 +377,6 @@ export default function Captains() {
       stopTimer();
     };
   }, []);
-
-  // useEffect(() => {
-  //   getWinnerCaptain();
-  //   winnerTimer.current = setInterval(() => {
-  //     console.log(showWinner);
-  //     setShowWinner(false);
-  //   }, 3000);
-  //   return () => clearInterval(winnerTimer.current);
-  // }, [increase]);
-
   useEffect(() => {
     (async () => {
       if (timer === 0) {
