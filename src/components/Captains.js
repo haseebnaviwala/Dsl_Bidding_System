@@ -14,6 +14,7 @@ import {
   query,
   updateDoc,
   where,
+  serverTimestamp
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { CAPTAINS_TIMER_IN_SECS, TIMER_STATES } from "./Contants";
@@ -237,6 +238,7 @@ export default function Captains() {
       collection(db, "bidAmount"),
       where("captainName", "==", captainData[index].username),
       orderBy("bidAmount", "desc"),
+      orderBy("lastUpdated"),
       limit(3)
     );
 
@@ -268,6 +270,7 @@ export default function Captains() {
     if (existingBid) {
       await updateDoc(doc(db, "bidAmount", existingBid.id), {
         bidAmount: amount,
+        lastUpdated: serverTimestamp()
       });
     } else {
       await addDoc(collection(db, "bidAmount"), {
