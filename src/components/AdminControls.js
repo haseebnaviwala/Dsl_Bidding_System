@@ -64,6 +64,9 @@ export default function AdminControls(props) {
     const timerRef = doc(db, "timer", "timer_2");
     await updateDoc(timerRef, { currentIndex: 0 });
     resetTimer();
+
+    const indexRef = doc(db, "nextIndex", "increaseIndex");
+    await updateDoc(indexRef, { currentIndex: 0 });
   };
 
   const shouldWeUpdateIndex = (currentLocalIndex, databaseIndex) => {
@@ -84,6 +87,15 @@ export default function AdminControls(props) {
       }
     }
     resetTimer();
+
+    const indexRef = doc(db, "nextIndex", "increaseIndex");
+    const docu = await getDoc(indexRef);
+    if (docu?.data()?.currentIndex >= 0) {
+      const databaseIndex = docu.data().currentIndex;
+      if (shouldWeUpdateIndex(index, databaseIndex)) {
+        await updateDoc(indexRef, { currentIndex: databaseIndex + 1 });
+      }
+    }
   };
 
   const shouldWeUpdateIndexOfWinnerCaptain = (

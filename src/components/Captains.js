@@ -21,7 +21,7 @@ import Thankyou from "./Thankyou";
 import CaptainWinner from "./captainWinner";
 
 export default function Captains() {
-  const [amount, setAmount] = useState(3);
+  const [amount, setAmount] = useState(0);
   const [captainData, setCaptainData] = useState([]);
   const [index, setIndex] = useState(0);
   const [ownerLogo, setOwnerLogo] = useState("");
@@ -57,11 +57,23 @@ export default function Captains() {
         await updateDoc(timerRef, { currentIndex: databaseIndex + 1 });
       }
     }
+
+    const indexRef = doc(db, "nextIndex", "increaseIndex");
+    const docu = await getDoc(indexRef);
+    if (docu?.data()?.currentIndex >= 0) {
+      const databaseIndex = docu.data().currentIndex;
+      if (shouldWeUpdateIndex(index, databaseIndex)) {
+        await updateDoc(indexRef, { currentIndex: databaseIndex + 1 });
+      }
+    }
   };
 
   const resetIndexOnDatabase = async () => {
     const timerRef = doc(db, "timer", "timer_2");
     await updateDoc(timerRef, { currentIndex: 0 });
+
+    const indexRef = doc(db, "nextIndex", "increaseIndex");
+    await updateDoc(indexRef, { currentIndex: 0 });
   };
 
   const listenForIndexUpdate = async (value) => {
@@ -79,14 +91,14 @@ export default function Captains() {
   };
 
   function openBidding() {
-    const initBid = amount;
+    // const initBid = amount;
     const t2 = gsap.timeline();
 
     t2.to(".bidding-modal", {
       transform: "translateX(0px)",
       duration: 0.5,
     });
-    addOrUpdateBid(initBid);
+    addAmount(3);
   }
 
   function getCaptains() {
@@ -183,22 +195,14 @@ export default function Captains() {
   }
 
   const getIncreaseCaptain = async (value) => {
-    const lastValue = value;
-    onSnapshot(doc(db, "timer", "timer_2"), (doc) => {
-      if (doc.data().currentIndex != lastValue) {
-        const t3 = gsap.timeline();
+    onSnapshot(doc(db, "nextIndex", "increaseIndex"), (doc) => {
+      const t3 = gsap.timeline();
 
-        t3.to(".bidding-modal", {
-          transform: "translateX(-1000px)",
-          duration: 0.5,
-        });
-
-        setAmount(3);
-        console.log(lastValue);
-        console.log(doc.data());
-      }
-      // console.log(doc.data());
-      console.log(value);
+      t3.to(".bidding-modal", {
+        transform: "translateX(-1000px)",
+        duration: 0.5,
+      });
+      setAmount(0);
     });
   };
 
@@ -284,7 +288,7 @@ export default function Captains() {
       }
 
       await handleOwnerTimer(TIMER_STATES.RESET);
-      setAmount(3);
+      // setAmount(3);
 
       const end_timer = doc(db, "timer", "timer_2");
       const changetimervalue2 = doc(db, "timer", "timer");
@@ -302,12 +306,12 @@ export default function Captains() {
         increase: false,
       });
 
-      const t3 = gsap.timeline();
+      // const t3 = gsap.timeline();
 
-      t3.to(".bidding-modal", {
-        transform: "translateX(-1000px)",
-        duration: 0.5,
-      });
+      // t3.to(".bidding-modal", {
+      //   transform: "translateX(-1000px)",
+      //   duration: 0.5,
+      // });
     }
 
     handleOwnerTimer(TIMER_STATES.RESET);
@@ -381,7 +385,7 @@ export default function Captains() {
   };
 
   const logoutOwner = async () => {
-    if (topThreeBidders[0].ownerName === undefined) {
+    if (topThreeBidders.length === 0) {
       console.log("empty");
     } else {
       if (topThreeBidders[0].ownerName === localStorage.getItem("userName")) {
@@ -401,6 +405,7 @@ export default function Captains() {
     getTimerData();
     getEndProgram();
     getCurrentOwnerLogo();
+    getIncreaseCaptain();
 
     return () => {
       stopTimer();
