@@ -10,6 +10,7 @@ import {
   setDoc,
   getDoc,
   getDocs,
+  serverTimestamp,
 } from "firebase/firestore";
 // import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import { db } from "../firebase";
@@ -22,7 +23,7 @@ export default function AdminControls(props) {
   // const remainingTime = useRef();
   const [index, setIndex] = useState();
   const [winnerCaptainIndex, setWinnerCaptainIndex] = useState();
-  const [docId, setDocId] = useState([]);
+  // const [docId, setDocId] = useState([]);
 
   const handleUpdate = async (payload) => {
     console.log("handle update");
@@ -175,7 +176,7 @@ export default function AdminControls(props) {
     docu.map((item, index) => {
       // console.log(item);
       const resetBidAmount = doc(db, "bidAmount", item);
-      updateDoc(resetBidAmount, { bidAmount: 0 });
+      updateDoc(resetBidAmount, { bidAmount: 0, bidIndex: 0, lastUpdated: serverTimestamp() });
     })
   }
 
