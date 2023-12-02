@@ -9,6 +9,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
 } from "firebase/firestore";
 // import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import { db } from "../firebase";
@@ -21,6 +22,7 @@ export default function AdminControls(props) {
   // const remainingTime = useRef();
   const [index, setIndex] = useState();
   const [winnerCaptainIndex, setWinnerCaptainIndex] = useState();
+  const [docId, setDocId] = useState([]);
 
   const handleUpdate = async (payload) => {
     console.log("handle update");
@@ -154,6 +156,29 @@ export default function AdminControls(props) {
     });
   }
 
+  async function resetBiddingAmount() {
+    const q = query(collection(db, "bidAmount"));
+    const documentId = [];
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      // console.log(doc.id, " => ", doc.data());
+      documentId.push(doc.id);
+      // console.log(doc.id);
+    });
+    // setDocId(documentId);
+    resetBidding(documentId)
+    console.log(documentId)
+  }
+
+  function resetBidding(docu){
+    docu.map((item, index) => {
+      // console.log(item);
+      const resetBidAmount = doc(db, "bidAmount", item);
+      updateDoc(resetBidAmount, { bidAmount: 0 });
+    })
+  }
+
   useEffect(() => {
     getTimerData();
   }, []);
@@ -173,6 +198,7 @@ export default function AdminControls(props) {
       <button onClick={resetIndexOfWinnerCaptainOnDatabase}>
         Reset Winner Captain
       </button>
+      <button onClick={resetBiddingAmount}>reset bidding amount</button>
       <button onClick={endProgram}>End Program</button>
     </div>
   );
