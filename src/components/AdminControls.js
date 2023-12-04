@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./adminControls.css";
 import {
   collection,
   addDoc,
@@ -168,16 +169,20 @@ export default function AdminControls(props) {
       // console.log(doc.id);
     });
     // setDocId(documentId);
-    resetBidding(documentId)
-    console.log(documentId)
+    resetBidding(documentId);
+    console.log(documentId);
   }
 
-  function resetBidding(docu){
+  function resetBidding(docu) {
     docu.map((item, index) => {
       // console.log(item);
       const resetBidAmount = doc(db, "bidAmount", item);
-      updateDoc(resetBidAmount, { bidAmount: 0, bidIndex: 0, lastUpdated: serverTimestamp() });
-    })
+      updateDoc(resetBidAmount, {
+        bidAmount: 0,
+        bidIndex: 0,
+        lastUpdated: serverTimestamp(),
+      });
+    });
   }
 
   useEffect(() => {
@@ -185,22 +190,26 @@ export default function AdminControls(props) {
   }, []);
 
   return (
-    <div>
-      <h3>Timer Control</h3>
-      <button onClick={startTimer}>Start Timer</button>
-      <button onClick={stopTimer}>Stop Timer</button>
-      <button onClick={resetTimer}>Reset Timer</button>
-      <button onClick={updateIndexOnDatabase}>Next captain</button>
-      <button onClick={resetIndexOnDatabase}>Reset captain</button>
-
-      <button onClick={updateIndexOfWinnerCaptainOnDatabase}>
-        Next Winner Captain
-      </button>
-      <button onClick={resetIndexOfWinnerCaptainOnDatabase}>
-        Reset Winner Captain
-      </button>
-      <button onClick={resetBiddingAmount}>reset bidding amount</button>
-      <button onClick={endProgram}>End Program</button>
+    <div className="controls">
+      <div className="timer-controls">
+        <h3>Timer Control</h3>
+        <button onClick={startTimer}>Start Timer</button>
+        <button onClick={stopTimer}>Stop Timer</button>
+        <button onClick={resetTimer}>Reset Timer</button>
+      </div>
+      <div className="captain-controls">
+        <h3>Captain Controls</h3>
+        <button onClick={updateIndexOnDatabase}>Next captain</button>
+        <button onClick={resetIndexOnDatabase}>Reset captain</button>
+      </div>
+      <div className="reset-bidding">
+        <h3>Reset Bidding</h3>
+        <button onClick={resetBiddingAmount}>reset bidding amount</button>
+      </div>
+      <div className="end-control">
+        <h3>End Program</h3>
+        <button onClick={endProgram}>End Program</button>
+      </div>
     </div>
   );
 }

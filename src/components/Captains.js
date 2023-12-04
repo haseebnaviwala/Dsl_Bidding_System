@@ -80,7 +80,7 @@ export default function Captains() {
   const listenForIndexUpdate = async (value) => {
     const currentIndex = value?.currentIndex;
     if (currentIndex && currentIndex >= 0) {
-      if (currentIndex === 14) {
+      if (currentIndex === 15) {
         resetIndexOnDatabase();
       } else {
         setIndex(currentIndex);
@@ -105,7 +105,7 @@ export default function Captains() {
   function getCaptains() {
     const captainsCollection = collection(db, "captains");
     const captainsData = [];
-    const queryRef = query(captainsCollection);
+    const queryRef = query(captainsCollection, orderBy("id", "asc"));
     onSnapshot(queryRef, (snapshot) => {
       snapshot.docs.forEach((document) => {
         captainsData.push(document.data());
@@ -254,7 +254,8 @@ export default function Captains() {
     const q = query(
       collection(db, "bidAmount"),
       where("captainName", "==", captainData[index].username),
-      orderBy("bidAmount", "desc")
+      orderBy("bidAmount", "desc"),
+      orderBy("lastUpdated"),
     );
 
     onSnapshot(q, (query) => {
@@ -286,7 +287,7 @@ export default function Captains() {
   const getNextCaptain = async () => {
     logoutOwner();
     if (index <= captainData.length) {
-      if (index < 13) {
+      if (index < 15) {
         await updateIndexOnDatabase();
       }
 
