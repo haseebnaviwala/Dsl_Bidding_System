@@ -115,11 +115,13 @@
 .captainScCurrentUser {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: absolute;
   left: 0;
   bottom: 0;
   overflow: hidden;
+  width: 400px;
+  /* overflow-x: visible; */
   /* flex-direction: column; */
    margin-left: 2rem;
   /* margin-top: 2rem; */

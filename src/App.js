@@ -71,7 +71,7 @@ function App() {
         ></Route>
 
         <Route
-          path="/adminControls"
+          path="/admin-Controls"
           element={
             <div>
               <AdminControls></AdminControls>

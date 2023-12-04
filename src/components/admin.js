@@ -30,7 +30,7 @@ export default function Admin() {
   function getCaptains() {
     const captainsCollection = collection(db, "captains");
     const captainsData = [];
-    const queryRef = query(captainsCollection);
+    const queryRef = query(captainsCollection, orderBy("id", "asc"));
     onSnapshot(queryRef, (snapshot) => {
       snapshot.docs.forEach((document) => {
         captainsData.push(document.data());
@@ -53,7 +53,7 @@ export default function Admin() {
     //   await resetIndexOnDatabase();
     // }
     if (currentIndex && currentIndex >= 0) {
-      if (currentIndex === 14) {
+      if (currentIndex === 15) {
         resetIndexOnDatabase();
       } else {
         setIndex(currentIndex);
@@ -93,6 +93,7 @@ export default function Admin() {
       collection(db, "bidAmount"),
       where("captainName", "==", captainData[index].username),
       orderBy("bidAmount", "desc"),
+      orderBy("lastUpdated"),
       limit(3)
     );
 
